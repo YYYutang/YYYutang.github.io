@@ -28,7 +28,7 @@
 <meta property="og:description" content="类123456789101112131415161718192021222324252627282930&lt;script type&#x3D;&quot;text&#x2F;javascript&quot;&gt;class Person&amp;#123;constructor(name,age)&amp;#123;&#x2F;&#x2F;构造器方法&#x2F;&#x2F;构造器中的this是类的实例对象this.name&#x3D;namethis.age&#x3D;age&amp;#125">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-06-18T07:16:00.000Z">
-<meta property="article:modified_time" content="2024-01-15T14:02:30.046Z">
+<meta property="article:modified_time" content="2024-01-15T14:20:50.453Z">
 <meta property="article:author" content="Liu Xuan">
 <meta property="article:tag" content="前端">
 <meta property="article:tag" content="react">
@@ -97,7 +97,7 @@
 <div class="bread-nav fs12"><div class="left"><div id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a><span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/react/">react</a></div><div id="post-meta"><span class="author">Posted on</span>
     <span class="created"><time datetime="2023-06-18T07:16:00.000Z">2023-06-18</time></span>
     
-    <span class="updated">, Updated on&nbsp;<time datetime="2024-01-15T14:02:30.046Z">2024-01-15</time></span>
+    <span class="updated">, Updated on&nbsp;<time datetime="2024-01-15T14:20:50.453Z">2024-01-15</time></span>
     </div></div></div>
 
 <article class='md-text content post'>
@@ -110,7 +110,7 @@
 <p>3、类定义的方法，都放在类的原型对象上，共实例使用</p>
 <h1 id="创建类组件"><a href="#创建类组件" class="headerlink" title="创建类组件"></a>创建类组件</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=&quot;text/babel&quot;&gt;</span><br><span class="line">class MyComponent extends React.Component&#123;</span><br><span class="line">//这里Component的c要大写</span><br><span class="line">//render是放在MyComponent原型对象上，供实例使用的</span><br><span class="line">render()&#123;</span><br><span class="line">return&#123;</span><br><span class="line">//render中的this是MyComponent的实例对象</span><br><span class="line">&lt;h2&gt;我是类定义的组件&lt;/h2&gt;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">ReactDOM.render(&lt;MyComponent/&gt;,document.getElementById(&#x27;test&#x27;))</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
 
-<p>执行ReactDOM.render（<MyComponent/>）之后。发生了什么？</p>
+<p>执行ReactDOM.render（<MyComponent>）之后。发生了什么？</MyComponent></p>
 <p>1、react解析组件标签，找到MyComponent组件</p>
 <p>2、发现组件是使用类定义的，随后new出该类的实例，并通过该实例调用到原型上的render方法</p>
 <p>3、将render返回的虚拟dom转为真实dom，随后呈现在页面中。</p>
