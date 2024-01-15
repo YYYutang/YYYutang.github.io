@@ -40,7 +40,7 @@
   --text-p3: #808080;
   --text-p4: #999;
   --text-meta: #ccc;
-  --text-code: #f53900;
+  --text-code: #14181f;
   --theme-bg2: #1cd0fd;
   --theme-link: #2094f3;
 }
@@ -57,7 +57,7 @@
     --text-p3: #858585;
     --text-p4: #707070;
     --text-meta: #4d4d4d;
-    --text-code: #ff6333;
+    --text-code: #1a1e26;
   }
 }
 @media screen and (prefers-color-scheme: dark) and (max-width: 667px) {
@@ -698,7 +698,6 @@ html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  scroll-behavior: smooth;
 }
 body {
   background: var(--site-bg);
