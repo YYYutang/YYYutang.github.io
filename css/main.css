@@ -5554,3 +5554,7 @@ img[fancybox='true'] {
   margin-right: 1rem;
   border-radius: 6px;
 }
+.cmt-body.beaudar {
+  margin: 0 -4px;
+  width: calc(100% + 8px);
+}
