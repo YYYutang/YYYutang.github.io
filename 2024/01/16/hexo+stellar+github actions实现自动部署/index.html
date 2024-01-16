@@ -82,14 +82,17 @@
 <div class="bread-nav fs12"><div class="left"><div id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a><span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/blog%E6%90%AD%E5%BB%BA/">blog搭建</a></div><div id="post-meta"><span class="author">Posted on</span>
     <span class="created"><time datetime="2024-01-16T12:49:00.000Z">2024-01-16</time></span>
     
-    <span class="updated">, Updated on&nbsp;<time datetime="2024-01-16T12:50:57.026Z">2024-01-16</time></span>
+    <span class="updated">, Updated on&nbsp;<time datetime="2024-01-16T12:57:29.238Z">2024-01-16</time></span>
     </div></div></div>
 
 <article class='md-text content post'>
 <h1 class="article-title"><span>hexo+stellar+github actions实现自动部署</span></h1>
 <h2 id="博客的持续部署"><a href="#博客的持续部署" class="headerlink" title="博客的持续部署"></a>博客的持续部署</h2><p>抛开定义，直观上，持续部署，顾名思义，就是持续不断地去部署，部署自动紧跟代码改变：你的提交了源码修改，部署上就自动更新了。对于我们的博客系统，也就是新建&#x2F;修改&#x2F;删除了文章，博客站点就自动更新、修改对应内容。从效果上来说，就是我们不用再去手动 <code>hexo g -d</code> 生成、部署了。</p>
 <p>用持续部署，首先提交源码，然后在云端就自动生成(编译)、部署，这个生成、部署的工作是不需要在本地完成的，由github提供的 CI&#x2F;CD 服务的服务器自动来完成。GitHub 免费提供的这项服务叫做 <a target="_blank" rel="noopener" href="https://github.com/features/actions" title="GitHub Actions">GitHub Actions</a>。</p>
-<h2 id="1-前提工作"><a href="#1-前提工作" class="headerlink" title="1. 前提工作"></a>1. 前提工作</h2><h3 id="1-1创建所需仓库"><a href="#1-1创建所需仓库" class="headerlink" title="1.1创建所需仓库"></a>1.1创建所需仓库</h3><ol>
+<h2 id="1-前提工作"><a href="#1-前提工作" class="headerlink" title="1. 前提工作"></a>1. 前提工作</h2><p>本教程在以下环境搭建。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo: 6.3.0</span><br><span class="line">hexo-cli: 4.3.0</span><br><span class="line">os: win32 10.0.19042</span><br><span class="line">node: 16.17.1</span><br><span class="line">hexo-deployer-git: 4.0.0</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-1创建所需仓库"><a href="#1-1创建所需仓库" class="headerlink" title="1.1创建所需仓库"></a>1.1创建所需仓库</h3><ol>
 <li>创建 <code>blog</code> 仓库用来存放 Hexo 项目</li>
 <li>创建 <code>your.github.io</code> 仓库用来存放静态博客页面</li>
 </ol>
@@ -142,10 +145,13 @@
 <p>1、path: themes&#x2F;stellar的主题地址忘记换成自己的，导致部署上去之后，所有的html文件均为空文件，并且页面加载不出来。</p>
 <p>2、部署成功，但在workflow里deploy那一步有大量报错，说找不到avatar属性，一开始以为是部署流程只识别了_config.theme.yml,所以没有识别_config.yml里设置的avatar，遂修改_config.theme.yml，但没有起作用。</p>
 <p>仔细检查发现主题是通过THEME_REPO设置的github连接引入的，而我github上fork的是一个比较早的版本的stellar，本地使用的_config.theme.yml是最新版本的stellar里提供的配置文件。将github上的主题仓库更新至最新版，问题解决。</p>
-<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/image/image_XvDrAt19Cq.png"></p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/01/16/hexo+stellar+github%20actions%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/image_XvDrAt19Cq.png"></p>
 <p>3、报大量的语法错误</p>
-<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/image/image_TGTchTWkX1.png"></p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/01/16/hexo+stellar+github%20actions%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/image_TGTchTWkX1.png"></p>
 <p>是指定的node_version过低的问题，最新版的stellar不适配12.x的版本，修改为15.x以上即可。</p>
+<p>4、报错ERROR Deployer not found: git，需要安装 hexo-deployer-git。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
 <h2 id="3-修改-config-yml里的deploy配置"><a href="#3-修改-config-yml里的deploy配置" class="headerlink" title="3. 修改_config.yml里的deploy配置"></a>3. 修改_config.yml里的deploy配置</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># <span class="title class_">Deployment</span></span><br><span class="line">## <span class="title class_">Docs</span>: <span class="attr">https</span>:<span class="comment">//hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy</span>:</span><br><span class="line">  <span class="attr">type</span>: <span class="string">&#x27;git&#x27;</span></span><br><span class="line">  <span class="attr">repo</span>: git@github.<span class="property">com</span>:yyyutang/<span class="title class_">YYYutang</span>.<span class="property">github</span>.<span class="property">io</span>.<span class="property">git</span></span><br><span class="line">  <span class="attr">branch</span>: main</span><br><span class="line">  <span class="attr">message</span>: $&#123;&#123; github.<span class="property">event</span>.<span class="property">head_commit</span>.<span class="property">message</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="4-配置theme的-config文件"><a href="#4-配置theme的-config文件" class="headerlink" title="4. 配置theme的_config文件"></a>4. 配置theme的_config文件</h2><p>复制一份 使用的theme根目录下的_config.yml，放到 <code>blog</code> 根目录下，名为 <code>_config.theme.yml</code>，如果您已经配置过此文件，只需要把您的复制过来就行。</p>
