@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.25.0" theme-name="Stellar" theme-version="1.25.0">
+  
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>hexo+stellar+github actions实现自动部署 - 小璇妙妙屋</title>
+
+  
+  <meta name="description" content="博客的持续部署抛开定义，直观上，持续部署，顾名思义，就是持续不断地去部署，部署自动紧跟代码改变：你的提交了源码修改，部署上就自动更新了。对于我们的博客系统，也就是新建&#x2F;修改&#x2F;删除了文章，博客站点就自动更新、修改对应内容。从效果上来说，就是我们不用再去手动 hexo g -d...">
+  
+  <meta name="keywords" content="blog,踩坑记录">
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+
+  
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+  
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/picture/title.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">小璇妙妙屋</div><div class="sub cap">冻手冻手！准备学习</div></a></div>
+
+<nav class="menu dis-select"></nav>
+</header>
+
+
+<div class="widgets">
+<widget class="widget-wrapper search"><div class="widget-body"><div class="search-wrapper" id="search-wrapper"><form class="search-form"><input type="text" class="search-input" id="search-input" data-filter="/posts/" placeholder="文章搜索"><svg t="1705074644177" class="icon search-icon" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div></div></widget>
+
+
+<widget class="widget-wrapper toc single" id="data-toc" collapse="false"><div class="widget-header cap dis-select"><span class="name">TOC</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%9A%E5%AE%A2%E7%9A%84%E6%8C%81%E7%BB%AD%E9%83%A8%E7%BD%B2"><span class="toc-text">博客的持续部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%89%8D%E6%8F%90%E5%B7%A5%E4%BD%9C"><span class="toc-text">1. 前提工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1%E5%88%9B%E5%BB%BA%E6%89%80%E9%9C%80%E4%BB%93%E5%BA%93"><span class="toc-text">1.1创建所需仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2%E7%94%9F%E6%88%90%E9%83%A8%E7%BD%B2%E5%AF%86%E9%92%A5"><span class="toc-text">1.2生成部署密钥</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E9%85%8D%E7%BD%AE%E9%83%A8%E7%BD%B2%E5%AF%86%E9%92%A5"><span class="toc-text">1.3 配置部署密钥</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%85%8D%E7%BD%AEworkflow"><span class="toc-text">2. 配置workflow</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E7%89%88%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="toc-text">模版参数说明</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BF%AE%E6%94%B9-config-yml%E9%87%8C%E7%9A%84deploy%E9%85%8D%E7%BD%AE"><span class="toc-text">3. 修改_config.yml里的deploy配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%85%8D%E7%BD%AEtheme%E7%9A%84-config%E6%96%87%E4%BB%B6"><span class="toc-text">4. 配置theme的_config文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%89%A7%E8%A1%8C%E4%BB%BB%E5%8A%A1"><span class="toc-text">5.执行任务</span></a></li></ol></div></div></widget>
+
+
+
+
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+<div class="bread-nav fs12"><div class="left"><div id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a><span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/blog%E6%90%AD%E5%BB%BA/">blog搭建</a></div><div id="post-meta"><span class="author">Posted on</span>
+    <span class="created"><time datetime="2024-01-16T12:49:00.000Z">2024-01-16</time></span>
+    
+    <span class="updated">, Updated on&nbsp;<time datetime="2024-01-16T12:50:57.026Z">2024-01-16</time></span>
+    </div></div></div>
+
+<article class='md-text content post'>
+<h1 class="article-title"><span>hexo+stellar+github actions实现自动部署</span></h1>
+<h2 id="博客的持续部署"><a href="#博客的持续部署" class="headerlink" title="博客的持续部署"></a>博客的持续部署</h2><p>抛开定义，直观上，持续部署，顾名思义，就是持续不断地去部署，部署自动紧跟代码改变：你的提交了源码修改，部署上就自动更新了。对于我们的博客系统，也就是新建&#x2F;修改&#x2F;删除了文章，博客站点就自动更新、修改对应内容。从效果上来说，就是我们不用再去手动 <code>hexo g -d</code> 生成、部署了。</p>
+<p>用持续部署，首先提交源码，然后在云端就自动生成(编译)、部署，这个生成、部署的工作是不需要在本地完成的，由github提供的 CI&#x2F;CD 服务的服务器自动来完成。GitHub 免费提供的这项服务叫做 <a target="_blank" rel="noopener" href="https://github.com/features/actions" title="GitHub Actions">GitHub Actions</a>。</p>
+<h2 id="1-前提工作"><a href="#1-前提工作" class="headerlink" title="1. 前提工作"></a>1. 前提工作</h2><h3 id="1-1创建所需仓库"><a href="#1-1创建所需仓库" class="headerlink" title="1.1创建所需仓库"></a>1.1创建所需仓库</h3><ol>
+<li>创建 <code>blog</code> 仓库用来存放 Hexo 项目</li>
+<li>创建 <code>your.github.io</code> 仓库用来存放静态博客页面</li>
+</ol>
+<h3 id="1-2生成部署密钥"><a href="#1-2生成部署密钥" class="headerlink" title="1.2生成部署密钥"></a>1.2生成部署密钥</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">$ ssh-keygen -f github-deploy-key</span><br></pre></td></tr></table></figure>
+
+<p>一路按回车直到生成成功</p>
+<p>当前目录下会有 <code>github-deploy-key</code> 和 <code>github-deploy-key.pub</code> 两个文件。</p>
+<h3 id="1-3-配置部署密钥"><a href="#1-3-配置部署密钥" class="headerlink" title="1.3 配置部署密钥"></a>1.3 配置部署密钥</h3><p>复制 <code>github-deploy-key</code> 文件内容，在 <code>blog</code> 仓库 <code>Settings -&gt; Secrets and variables -&gt; Actions</code> 页面上添加。</p>
+<ol>
+<li>在 <code>Name</code> 输入框填写 <code>HEXO_DEPLOY_PRI</code>。</li>
+<li>在 <code>Value</code> 输入框填写 <code>github-deploy-key</code> 文件内容。</li>
+</ol>
+<p>复制 <code>github-deploy-key.pub</code> 文件内容，在 <code>your.github.io</code> 仓库 <code>Settings -&gt; Deploy keys -&gt; Add deploy key</code> 页面上添加。</p>
+<ol>
+<li>在 <code>Title</code> 输入框填写 <code>HEXO_DEPLOY_PUB</code>。</li>
+<li>在 <code>Key</code> 输入框填写 <code>github-deploy-key.pub</code> 文件内容。</li>
+<li>勾选 <code>Allow write access</code> 选项。</li>
+</ol>
+<h2 id="2-配置workflow"><a href="#2-配置workflow" class="headerlink" title="2. 配置workflow"></a>2. 配置workflow</h2><p>在 <code>blog</code> 仓库根目录下创建 <code>.github/workflows/deploy.yml</code> 文件。</p>
+<p>在 <code>deploy.yml</code> 文件中粘贴以下内容。</p>
+<p>配置文件</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name</span>: <span class="variable constant_">CI</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on</span>:</span><br><span class="line">  <span class="attr">push</span>:</span><br><span class="line">    <span class="attr">branches</span>:</span><br><span class="line">      - main</span><br><span class="line"></span><br><span class="line"><span class="attr">env</span>:</span><br><span class="line">  <span class="attr">GIT_USER</span>: <span class="title class_">YYYutang</span></span><br><span class="line">  <span class="attr">GIT_EMAIL</span>: <span class="number">1036503272</span>@qq.<span class="property">com</span></span><br><span class="line">  <span class="attr">THEME_REPO</span>: <span class="title class_">YYYutang</span>/hexo-theme-stellar</span><br><span class="line">  <span class="attr">THEME_BRANCH</span>: main</span><br><span class="line">  <span class="attr">DEPLOY_REPO</span>: <span class="title class_">YYYutang</span>/<span class="title class_">YYYutang</span>.<span class="property">github</span>.<span class="property">io</span></span><br><span class="line">  <span class="attr">DEPLOY_BRANCH</span>: main</span><br><span class="line"></span><br><span class="line"><span class="attr">jobs</span>:</span><br><span class="line">  <span class="attr">build</span>:</span><br><span class="line">    <span class="attr">name</span>: <span class="title class_">Build</span> on node $&#123;&#123; matrix.<span class="property">node_version</span> &#125;&#125; and $&#123;&#123; matrix.<span class="property">os</span> &#125;&#125;</span><br><span class="line">    runs-<span class="attr">on</span>: ubuntu-latest</span><br><span class="line">    <span class="attr">strategy</span>:</span><br><span class="line">      <span class="attr">matrix</span>:</span><br><span class="line">        <span class="attr">os</span>: [ubuntu-latest]</span><br><span class="line">        <span class="attr">node_version</span>: [<span class="number">16.</span>x]</span><br><span class="line"></span><br><span class="line">    <span class="attr">steps</span>:</span><br><span class="line">      - <span class="attr">name</span>: <span class="title class_">Checkout</span></span><br><span class="line">        <span class="attr">uses</span>: actions/checkout@v2</span><br><span class="line"></span><br><span class="line">      - <span class="attr">name</span>: <span class="title class_">Checkout</span> theme repo</span><br><span class="line">        <span class="attr">uses</span>: actions/checkout@v2</span><br><span class="line">        <span class="attr">with</span>:</span><br><span class="line">          <span class="attr">repository</span>: $&#123;&#123; env.<span class="property">THEME_REPO</span> &#125;&#125;</span><br><span class="line">          <span class="attr">ref</span>: $&#123;&#123; env.<span class="property">THEME_BRANCH</span> &#125;&#125;</span><br><span class="line">          <span class="attr">path</span>: themes/stellar</span><br><span class="line"></span><br><span class="line">      - <span class="attr">name</span>: <span class="title class_">Checkout</span> deploy repo</span><br><span class="line">        <span class="attr">uses</span>: actions/checkout@v2</span><br><span class="line">        <span class="attr">with</span>:</span><br><span class="line">          <span class="attr">repository</span>: $&#123;&#123; env.<span class="property">DEPLOY_REPO</span> &#125;&#125;</span><br><span class="line">          <span class="attr">ref</span>: $&#123;&#123; env.<span class="property">DEPLOY_BRANCH</span> &#125;&#125;</span><br><span class="line">          <span class="attr">path</span>: .<span class="property">deploy_git</span></span><br><span class="line"></span><br><span class="line">      - <span class="attr">name</span>: <span class="title class_">Use</span> <span class="title class_">Node</span>.<span class="property">js</span> $&#123;&#123; matrix.<span class="property">node_version</span> &#125;&#125;</span><br><span class="line">        <span class="attr">uses</span>: actions/setup-node@v1</span><br><span class="line">        <span class="attr">with</span>:</span><br><span class="line">          node-<span class="attr">version</span>: $&#123;&#123; matrix.<span class="property">node_version</span> &#125;&#125;</span><br><span class="line"></span><br><span class="line">      - <span class="attr">name</span>: <span class="title class_">Configuration</span> environment</span><br><span class="line">        <span class="attr">env</span>:</span><br><span class="line">          <span class="attr">HEXO_DEPLOY_PRI</span>: $&#123;&#123;secrets.<span class="property">HEXO_DEPLOY_PRI</span>&#125;&#125;</span><br><span class="line">        <span class="attr">run</span>: |</span><br><span class="line">          sudo timedatectl set-timezone <span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">          mkdir -p ~<span class="regexp">/.ssh/</span></span><br><span class="line">          echo <span class="string">&quot;$HEXO_DEPLOY_PRI&quot;</span> &gt; ~<span class="regexp">/.ssh/i</span>d_rsa</span><br><span class="line">          chmod <span class="number">600</span> ~<span class="regexp">/.ssh/i</span>d_rsa</span><br><span class="line">          ssh-keyscan github.<span class="property">com</span> &gt;&gt; ~<span class="regexp">/.ssh/</span>known_hosts</span><br><span class="line">          git config --<span class="variable language_">global</span> user.<span class="property">name</span> $GIT_USER</span><br><span class="line">          git config --<span class="variable language_">global</span> user.<span class="property">email</span> $GIT_EMAIL</span><br><span class="line">          cp _config.<span class="property">theme</span>.<span class="property">yml</span> themes/stellar/_config.<span class="property">yml</span></span><br><span class="line"></span><br><span class="line">      - <span class="attr">name</span>: <span class="title class_">Install</span> dependencies</span><br><span class="line">        <span class="attr">run</span>: |</span><br><span class="line">          npm install</span><br><span class="line"></span><br><span class="line">      - <span class="attr">name</span>: <span class="title class_">Deploy</span> hexo</span><br><span class="line">        <span class="attr">run</span>: |</span><br><span class="line">          npm run deploy</span><br></pre></td></tr></table></figure>
+
+<h3 id="模版参数说明"><a href="#模版参数说明" class="headerlink" title="模版参数说明"></a>模版参数说明</h3><ul>
+<li><em>name</em> 为此 Action 的名字</li>
+<li><em>on</em> 触发条件，当满足条件时会触发此任务，这里的 <code>on.push.branches.$.master</code> 是指当 <code>master</code> 分支收到 <code>push</code> 后执行任务。</li>
+<li><em>env</em> 为环境变量对象<ul>
+<li><em>env.GIT_USER</em> 为 Hexo 编译后使用此 git 用户部署到仓库。</li>
+<li><em>env.GIT_EMAIL</em> 为 Hexo 编译后使用此 git 邮箱部署到仓库。</li>
+<li><em>env.THEME_REPO</em> 为您的 Hexo 所使用的主题的仓库，这里为 <code>sanonz/hexo-theme-concise</code>。</li>
+<li><em>env.THEME_BRANCH</em> 为您的 Hexo 所使用的主题仓库的版本，可以是：branch、tag 或者 SHA。</li>
+<li><em>env.DEPLOY_REPO</em> 为 Hexo 编译后要部署的仓库，例如：<code>sanonz/sanonz.github.io</code>。</li>
+<li><em>env.DEPLOY_BRANCH</em> 为 Hexo 编译后要部署到的分支，例如：master。</li>
+</ul>
+</li>
+<li><em>jobs</em> 为此 Action 下的任务列表<ul>
+<li><em>jobs.{job}.name</em> 任务名称</li>
+<li><em>jobs.{job}.runs-on</em> 任务所需容器，可选值：<code>ubuntu-latest</code>、<code>windows-latest</code>、<code>macos-latest</code>。</li>
+<li><em>jobs.{job}.strategy</em> 策略下可以写 <code>array</code> 格式，此 job 会遍历此数组执行。</li>
+<li><em>jobs.{job}.steps</em> 一个步骤数组，可以把所要干的事分步骤放到这里。<ul>
+<li><em>jobs.{job}.steps.$.name</em> 步骤名，编译时会会以 LOG 形式输出。</li>
+<li><em>jobs.{job}.steps.$.uses</em> 所要调用的 Action，可以到 <a target="_blank" rel="noopener" href="https://github.com/actions" title="https://github.com/actions">https://github.com/actions</a> 查看更多。</li>
+<li><em>jobs.{job}.steps.$.with</em> 一个对象，调用 Action 传的参数，具体可以查看所使用 Action 的说明。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>这里踩的坑有：</p>
+<p>1、path: themes&#x2F;stellar的主题地址忘记换成自己的，导致部署上去之后，所有的html文件均为空文件，并且页面加载不出来。</p>
+<p>2、部署成功，但在workflow里deploy那一步有大量报错，说找不到avatar属性，一开始以为是部署流程只识别了_config.theme.yml,所以没有识别_config.yml里设置的avatar，遂修改_config.theme.yml，但没有起作用。</p>
+<p>仔细检查发现主题是通过THEME_REPO设置的github连接引入的，而我github上fork的是一个比较早的版本的stellar，本地使用的_config.theme.yml是最新版本的stellar里提供的配置文件。将github上的主题仓库更新至最新版，问题解决。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/image/image_XvDrAt19Cq.png"></p>
+<p>3、报大量的语法错误</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/image/image_TGTchTWkX1.png"></p>
+<p>是指定的node_version过低的问题，最新版的stellar不适配12.x的版本，修改为15.x以上即可。</p>
+<h2 id="3-修改-config-yml里的deploy配置"><a href="#3-修改-config-yml里的deploy配置" class="headerlink" title="3. 修改_config.yml里的deploy配置"></a>3. 修改_config.yml里的deploy配置</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># <span class="title class_">Deployment</span></span><br><span class="line">## <span class="title class_">Docs</span>: <span class="attr">https</span>:<span class="comment">//hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy</span>:</span><br><span class="line">  <span class="attr">type</span>: <span class="string">&#x27;git&#x27;</span></span><br><span class="line">  <span class="attr">repo</span>: git@github.<span class="property">com</span>:yyyutang/<span class="title class_">YYYutang</span>.<span class="property">github</span>.<span class="property">io</span>.<span class="property">git</span></span><br><span class="line">  <span class="attr">branch</span>: main</span><br><span class="line">  <span class="attr">message</span>: $&#123;&#123; github.<span class="property">event</span>.<span class="property">head_commit</span>.<span class="property">message</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-配置theme的-config文件"><a href="#4-配置theme的-config文件" class="headerlink" title="4. 配置theme的_config文件"></a>4. 配置theme的_config文件</h2><p>复制一份 使用的theme根目录下的_config.yml，放到 <code>blog</code> 根目录下，名为 <code>_config.theme.yml</code>，如果您已经配置过此文件，只需要把您的复制过来就行。</p>
+<p>这里注意需要把网站的基础信息，如头像Avatar、标题Title等设置好。</p>
+<h2 id="5-执行任务"><a href="#5-执行任务" class="headerlink" title="5.执行任务"></a>5.执行任务</h2><p>写一篇文章，<code>push</code> 到 <code>blog</code> 仓库的 <code>main</code> 分支，在此仓库 <code>Actions</code> 页面查看当前 task。</p>
+<p>当任务完成后查看您的博客 <code>https://your.github.io</code>，如果不出意外的话已经可以看到新添加的文章了。</p>
+
+
+
+<div class="article-footer reveal fs14">
+    <section id="license">
+      <div class="header"><span>License</span></div>
+      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    </div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/01/16/Window%E5%AF%B9%E8%B1%A1/">Javascript Windows对象</a></div></section></div>
+
+
+
+
+
+
+  <div class='related-wrap md-text reveal' id="comments">
+    <section class='header cmt-title cap theme'>
+      Join the discussion
+    </section>
+    <section class='body cmt-body beaudar'>
+      
+
+<svg class="loading" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="beaudar" repo="YYYutang/blogComments" issue-term="pathname" theme="github-light" input-position="top" comment-order="desc" loading="false" branch="main"></div>
+
+    </section>
+  </div>
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本站由 <a href="/">Liu Xuan</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.25.0">Stellar 1.25.0</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    
+<script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = stellar.config.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.25.0';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.25.0';
+  stellar.config = {
+    date_suffix: {
+      just: 'Just',
+      min: 'minutes ago',
+      hour: 'hours ago',
+      day: 'days ago',
+      month: 'months ago',
+    },
+    root : '/',
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://gcore.jsdelivr.net/npm/jquery@3.6.2/dist/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
+  }
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js","memos":"/js/plugins/memos.js","marked":"/js/plugins/marked.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@10.3/swiper-bundle.min.css","js":"https://unpkg.com/swiper@10.3/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://gcore.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://gcore.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".fancybox img"});
+  }
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.copycode = Object.assign({"enable":true,"js":"/js/plugins/copycode.js","default_text":"Copy","success_text":"Copied","toast":"复制成功"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+  <script>
+  function loadBeaudar() {
+    const els = document.querySelectorAll("#comments #beaudar");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.error(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://beaudar.lipk.org/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadBeaudar();
+  });
+</script>
+
+
+
+
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>
