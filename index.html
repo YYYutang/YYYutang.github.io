@@ -65,7 +65,7 @@
 <nav class="menu dis-select"></nav>
 </div></widget>
 
-<widget class="widget-wrapper recent"><div class="widget-header cap theme dis-select"><span class="name">Recent Update</span></div><div class="widget-body related-posts fs14"><a class="item title" href="/2023/06/18/%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6/"><span class="title">类式组件</span></a><a class="item title" href="/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/"><span class="title">虚拟DOM创建</span></a><a class="item title" href="/2024/01/15/%E8%A1%A5%E5%85%85%E6%A0%87%E7%AD%BE/"><span class="title">补充标签</span></a><a class="item title" href="/2024/01/15/%E8%A1%A8%E6%A0%BC/"><span class="title">表格</span></a><a class="item title" href="/2024/01/16/%E8%BF%90%E7%AE%97/"><span class="title">Javascript运算</span></a></div></widget>
+<widget class="widget-wrapper recent"><div class="widget-header cap theme dis-select"><span class="name">Recent Update</span></div><div class="widget-body related-posts fs14"><a class="item title" href="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/"><span class="title">盒子模型</span></a><a class="item title" href="/2023/06/18/%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6/"><span class="title">类式组件</span></a><a class="item title" href="/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/"><span class="title">虚拟DOM创建</span></a><a class="item title" href="/2024/01/15/%E8%A1%A5%E5%85%85%E6%A0%87%E7%AD%BE/"><span class="title">补充标签</span></a><a class="item title" href="/2024/01/15/%E8%A1%A8%E6%A0%BC/"><span class="title">表格</span></a></div></widget>
 
 <widget class="widget-wrapper timeline"><div class="widget-header cap theme dis-select"><span class="name">近期动态</span></div><div class="widget-body fs14"><div class="tag-plugin timeline stellar-timeline-api" api="https://api.github.com/repos/YYYutang/xuanBlog/issues" user="YYYutang"></div></div></widget>
 
@@ -87,7 +87,31 @@
 
 
 <div class="nav-wrap"><nav class="sub post cap"><a class="active" href="/">Recent</a><a href="/categories">Categories</a><a href="/tags">Tags</a><a href="/archives">Archives</a></nav></div>
-<div class="post-list post"><a class="post-card post " href="/2024/01/16/hexo+stellar+github%20actions%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/">
+<div class="post-list post"><a class="post-card post " href="/2024/01/22/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/picture/javascript.jpg"/></div><h2 class="post-title">Javascript 正则表达式</h2><div class="excerpt"><p>概念定义正则表达式（Regular Expression）是一种字符串匹配的模式（规则）。
+使用场景
+例如验证表单：手机号表单要求用户只能输入11位的数字 (匹配)
+过滤掉页面内容中的一些敏感词(替换)，或从字符串中获取我们想要的特定部分(提取)等
+
+
+正则基本使用
+定义规则1const reg =  /表达式/
+
+其中/ /是正则表达式字面量
+正则表达式也是对象
+
+
+使用正则
+test()...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-22T07:20:00.000Z">2024-01-22</time></span><span class="cap breadcrumb">Javascript</span></div></article>
+</a><a class="post-card post " href="/2024/01/22/%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8/">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/picture/javascript.jpg"/></div><h2 class="post-title">Javascript 本地存储</h2><div class="excerpt"><p>本地存储：将数据存储在本地浏览器中
+常见的使用场景：
+https://todomvc.com/examples/vanilla-es6/ 页面刷新数据不丢失
+好处：
+1、页面刷新或者关闭不丢失数据，实现数据持久化
+2、容量较大，sessionStorage和 localStorage 约 5M 左右
+localStorage（重点）作用: 数据可以长期保留在本地浏览器中，刷新页面和关闭页面，...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-22T07:18:00.000Z">2024-01-22</time></span><span class="cap breadcrumb">Javascript</span></div></article>
+</a><a class="post-card post " href="/2024/01/16/hexo+stellar+github%20actions%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/">
 <article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/picture/blog.jpg"/></div><h2 class="post-title">hexo+stellar+github actions实现自动部署</h2><div class="excerpt"><p>博客的持续部署抛开定义，直观上，持续部署，顾名思义，就是持续不断地去部署，部署自动紧跟代码改变：你的提交了源码修改，部署上就自动更新了。对于我们的博客系统，也就是新建&#x2F;修改&#x2F;删除了文章，博客站点就自动更新、修改对应内容。从效果上来说，就是我们不用再去手动 hexo g -d 生成、部署了。
 用持续部署，首先提交源码，然后在云端就自动生成(编译)、部署，这个生成、部署的工作...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-16T12:49:00.000Z">2024-01-16</time></span><span class="cap breadcrumb">blog搭建</span></div></article>
 </a><a class="post-card post " href="/2024/01/16/Window%E5%AF%B9%E8%B1%A1/">
@@ -143,26 +167,10 @@ DOM 节点节点是文档树的组成部分，每一个节点都是一个...</p>
 
 forin:
 123456789101112131415// 1. 遍历对象 for in       let obj = &#123;      uname: &#x27;pink老师&#x27;,      age: 18,    ...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-16T12:12:00.000Z">2024-01-16</time></span><span class="cap breadcrumb">Javascript</span></div></article>
-</a><a class="post-card post " href="/2024/01/16/%E5%87%BD%E6%95%B0/">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/picture/javascript.jpg"/></div><h2 class="post-title">Javascript函数</h2><div class="excerpt"><p>作用域作用域的使用提高了程序逻辑的局部性，增强了程序的可靠性，减少了名字冲突。
-全局作用域作用于所有代码执行的环境(整个 script 标签内部)或者一个独立的 js 文件
-处于全局作用域内的变量，称为全局变量
-局部作用域作用于函数内的代码环境，就是局部作用域。 因为跟函数有关系，所以也称为函数作用域。
-处于局部作用域内的变量称为局部变量
-
-如果函数内部，变量没有声明，直接赋值，也当全局变量...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-16T12:11:00.000Z">2024-01-16</time></span><span class="cap breadcrumb">Javascript</span></div></article>
-</a><a class="post-card post " href="/2024/01/16/%E6%95%B0%E7%BB%84/">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/picture/javascript.jpg"/></div><h2 class="post-title">Javascript数组</h2><div class="excerpt"><p>常用api增加元素arr.push
-push() 方法将指定的元素添加到数组的末尾，并返回新的数组长度。会修改原有数组。
-arr.concat([v1,v2])
-concat() 方法用于合并两个或多个数组。此方法不会更改现有数组，而是返回一个新数组。
-arr.unshift（v1,v2）
-unshift() 方法将指定元素添加到数组的开头，并返回数组的新长度。
-删除元素arr.splice...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-16T12:11:00.000Z">2024-01-16</time></span><span class="cap breadcrumb">Javascript</span></div></article>
 </a></div>
 
   <div class='paginator-wrap dis-select'>
-  <span class="extend prev" rel="prev"></span><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"></a>
+  <span class="extend prev" rel="prev"></span><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"></a>
   </div>
 
 
