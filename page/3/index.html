@@ -65,7 +65,7 @@
 <nav class="menu dis-select"></nav>
 </div></widget>
 
-<widget class="widget-wrapper recent"><div class="widget-header cap theme dis-select"><span class="name">Recent Update</span></div><div class="widget-body related-posts fs14"><a class="item title" href="/2024/01/16/%E8%BF%90%E7%AE%97/"><span class="title">Javascript运算</span></a><a class="item title" href="/2024/01/16/%E9%80%89%E6%8B%A9%E5%99%A8/"><span class="title">选择器</span></a><a class="item title" href="/2024/02/22/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%80%9D%E6%83%B3/"><span class="title">Javascript 面向对象</span></a><a class="item title" href="/2024/02/13/%E6%B7%B1%E5%85%A5%E5%AF%B9%E8%B1%A1/"><span class="title">Javascript 构造函数</span></a><a class="item title" href="/2024/02/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/"><span class="title">深浅拷贝及其实现方式</span></a></div></widget>
+<widget class="widget-wrapper recent"><div class="widget-header cap theme dis-select"><span class="name">Recent Update</span></div><div class="widget-body related-posts fs14"><a class="item title" href="/2024/02/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/"><span class="title">深浅拷贝及其实现方式</span></a><a class="item title" href="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/"><span class="title">盒子模型</span></a><a class="item title" href="/2023/06/18/%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6/"><span class="title">类式组件</span></a><a class="item title" href="/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/"><span class="title">虚拟DOM创建</span></a><a class="item title" href="/2024/01/15/%E8%A1%A5%E5%85%85%E6%A0%87%E7%AD%BE/"><span class="title">补充标签</span></a></div></widget>
 
 <widget class="widget-wrapper timeline"><div class="widget-header cap theme dis-select"><span class="name">近期动态</span></div><div class="widget-body fs14"><div class="tag-plugin timeline stellar-timeline-api" api="https://api.github.com/repos/YYYutang/xuanBlog/issues" user="YYYutang"></div></div></widget>
 
@@ -87,7 +87,15 @@
 
 
 <div class="nav-wrap"><nav class="sub post cap"><a class="active" href="/">Recent</a><a href="/categories">Categories</a><a href="/tags">Tags</a><a href="/archives">Archives</a></nav></div>
-<div class="post-list post"><a class="post-card post " href="/2024/01/16/%E6%95%B0%E7%BB%84/">
+<div class="post-list post"><a class="post-card post " href="/2024/01/16/%E5%87%BD%E6%95%B0/">
+<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/picture/javascript.jpg"/></div><h2 class="post-title">Javascript函数</h2><div class="excerpt"><p>作用域作用域的使用提高了程序逻辑的局部性，增强了程序的可靠性，减少了名字冲突。
+全局作用域作用于所有代码执行的环境(整个 script 标签内部)或者一个独立的 js 文件
+处于全局作用域内的变量，称为全局变量
+局部作用域作用于函数内的代码环境，就是局部作用域。 因为跟函数有关系，所以也称为函数作用域。
+处于局部作用域内的变量称为局部变量
+
+如果函数内部，变量没有声明，直接赋值，也当全局变量...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-16T12:11:00.000Z">2024-01-16</time></span><span class="cap breadcrumb">Javascript</span></div></article>
+</a><a class="post-card post " href="/2024/01/16/%E6%95%B0%E7%BB%84/">
 <article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/picture/javascript.jpg"/></div><h2 class="post-title">Javascript数组</h2><div class="excerpt"><p>常用api增加元素arr.push
 push() 方法将指定的元素添加到数组的末尾，并返回新的数组长度。会修改原有数组。
 arr.concat([v1,v2])
@@ -162,19 +170,10 @@ all ：过渡所有能过渡的属性。
 与相对定位的区别：相对定位的百分比值，参考的是其父元素；定位的百分比值，参考的是其自身。
 浏览器针对位移有优化，与定位相比，浏览器处理位移的效率更高。
 t...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-16T11:47:00.000Z">2024-01-16</time></span><span class="cap breadcrumb">CSS</span></div></article>
-</a><a class="post-card post " href="/2024/01/16/%E6%96%B0%E5%A2%9E%E5%86%85%E5%AE%B9/">
-<article class="md-text"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/picture/CSS.png"/></div><h2 class="post-title">CSS3新增内容</h2><div class="excerpt"><p>2.1 新增长度单位
-rem 根元素字体大小的倍数，只与根元素字体大小有关。
-vw 视口宽度的百分之多少 10vw 就是视口宽度的 10% 。
-vh 视口高度的百分之多少 10vh 就是视口高度的 10% 。
-vmax 视口宽高中大的那个的百分之多少。（了解即可）
-vmin 视口宽高中小的那个的百分之多少。（了解即可）
-
-2.2 新增选择器CSS3 新增的选择器有：动态伪类、目标伪类、语言伪...</p></div><div class="meta cap"><span class="cap" id="post-meta">Posted on&nbsp;<time datetime="2024-01-16T11:45:00.000Z">2024-01-16</time></span><span class="cap breadcrumb">CSS</span></div></article>
 </a></div>
 
   <div class='paginator-wrap dis-select'>
-  <a class="extend prev" rel="prev" href="/page/2/"></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"></a>
+  <a class="extend prev" rel="prev" href="/page/2/"></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/"></a>
   </div>
 
 
