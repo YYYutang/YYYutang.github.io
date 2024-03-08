@@ -6197,9 +6197,6 @@ div.swiper-slide img {
 .swiper-button-next:after {
   transform: translateX(1px);
 }
-img[data-fancybox] {
-  cursor: zoom-in;
-}
 .highlight {
   position: relative;
 }
