@@ -1,0 +1,671 @@
+
+<!DOCTYPE html><html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.27.0" theme-name="Stellar" theme-version="1.27.0">
+  
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>盒子模型 - 小璇妙妙屋</title>
+
+  
+  <meta name="description" content="1.长度单位
+px ：像素。
+em ：相对元素 font-size 的倍数。如果子元素没有，就往父元素上找。
+rem ：相对根字体大小，html标签就是根。
+% ：相对父元素计算。
+
+2.元素的显示模式2.1块元素（block）&lt;div&gt;
+又称：块级元素
+特点：
+
+在页面中独占一行...">
+  
+  <meta name="keywords" content="CSS,前端">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.27.0">
+
+  
+
+  
+
+  
+</head>
+<body>
+
+<div class="l_body s:aa content tech" id="start" layout="post" ><aside class="l_left"><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="config.avatar" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">config.title</div><div class="sub cap">冻手冻手！准备学习</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
+
+
+<nav class="menu dis-select"></nav>
+</div>
+<div class="widgets">
+
+
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2024/02/13/%E6%B7%B1%E5%85%A5%E5%AF%B9%E8%B1%A1/"><span class="title">Javascript 构造函数</span></a><a class="item title" href="/2024/02/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/"><span class="title">深浅拷贝及其实现方式</span></a><a class="item title" href="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/"><span class="title">盒子模型</span></a><a class="item title" href="/2023/06/18/%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6/"><span class="title">类式组件</span></a><a class="item title" href="/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/"><span class="title">虚拟DOM创建</span></a></div></widget>
+</div>
+
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/CSS/">CSS</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-01-16T03:27:00.000Z">2024-01-16</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2024-03-08T04:30:30.279Z">2024-03-08</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>盒子模型</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><h2 id="1-长度单位"><a href="#1-长度单位" class="headerlink" title="1.长度单位"></a>1.长度单位</h2><ol>
+<li>px ：像素。</li>
+<li>em ：相对元素 font-size 的倍数。如果子元素没有，就往父元素上找。</li>
+<li>rem ：相对根字体大小，html标签就是根。</li>
+<li>% ：相对父元素计算。</li>
+</ol>
+<h2 id="2-元素的显示模式"><a href="#2-元素的显示模式" class="headerlink" title="2.元素的显示模式"></a>2.元素的显示模式</h2><h3 id="2-1块元素（block）"><a href="#2-1块元素（block）" class="headerlink" title="2.1块元素（block）"></a>2.1块元素（block）</h3><p>&lt;div&gt;</p>
+<p>又称：块级元素</p>
+<p>特点：</p>
+<ol>
+<li>在页面中独占一行，不会与任何元素共用一行，是从上到下排列的。</li>
+<li>默认宽度：撑满父元素。</li>
+<li>默认高度：由内容撑开。</li>
+<li>可以通过 CSS 设置宽高。</li>
+</ol>
+<h3 id="2-2行内元素（inline）"><a href="#2-2行内元素（inline）" class="headerlink" title="2.2行内元素（inline）"></a>2.2行内元素（inline）</h3><p>&lt;span&gt;</p>
+<p>又称：内联元素</p>
+<p>特点:</p>
+<p>1.在页面中不独占一行，一行中不能容纳下的行内元素，会在下一行继续从左到右排列</p>
+<p>2.默认宽度：由内容撑开。</p>
+<p>&#x2F;* 自定义鼠标光标 *&#x2F;</p>
+<p>cursor: url(“.&#x2F;arrow.png”),pointer;</p>
+<p>3. 默认高度：由内容撑开。</p>
+<p>4.无法通过 CSS 设置宽高。</p>
+<h3 id="2-3行内块元素（inline-block）"><a href="#2-3行内块元素（inline-block）" class="headerlink" title="2.3行内块元素（inline-block）"></a>2.3行内块元素（inline-block）</h3><p>&lt;img&gt;</p>
+<p>又称：内联块元素</p>
+<p>特点：</p>
+<p>1.在页面中不独占一行，一行中不能容纳下的行内元素，会在下一行继续从左到右排列。</p>
+<p>2.默认宽度：由内容撑开。</p>
+<p>3.默认高度：由内容撑开。</p>
+<p>4.可以通过 CSS 设置宽高。</p>
+<p>注意：元素早期只分为：行内元素、块级元素，区分条件也只有一条：”是否独占一行”，如果按照这种分类方式，行内块元素应该算作行内元素。</p>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3.总结"></a>3.总结</h2><h3 id="块元素（block）"><a href="#块元素（block）" class="headerlink" title="块元素（block）"></a>块元素（block）</h3><ol>
+<li>主体结构标签： &lt;html&gt; 、 &lt;body&gt;</li>
+<li>排版标签： &lt;h1&gt; ~ &lt;h6&gt; 、 &lt;hr&gt; 、 &lt;p&gt; 、 &lt;pre&gt; 、 &lt;div&gt;</li>
+<li>列表标签： &lt;ul&gt; 、 &lt;ol&gt; 、 &lt;li&gt; 、 &lt;dl&gt; 、 &lt;dt&gt; 、 &lt;dd&gt;</li>
+<li>表格相关标签： &lt;table&gt; 、 &lt;tbody&gt; 、 &lt;thead&gt; 、 &lt;tfoot&gt; 、 &lt;tr&gt; 、</li>
+</ol>
+<p>&lt;caption&gt;</p>
+<p>&#x20; 5.&lt;form&gt; 与 &lt;option&gt;</p>
+<h3 id="行内元素（inline）"><a href="#行内元素（inline）" class="headerlink" title="行内元素（inline）"></a>行内元素（inline）</h3><ol>
+<li>文本标签： &lt;br&gt; 、 &lt;em&gt; 、 &lt;strong&gt; 、 &lt;sup&gt; 、 &lt;sub&gt; 、 &lt;del&gt; 、 &lt;ins&gt;</li>
+<li>&lt;a&gt; 与 &lt;label&gt;</li>
+</ol>
+<h3 id="行内块元素（inline-block）"><a href="#行内块元素（inline-block）" class="headerlink" title="行内块元素（inline-block）"></a>行内块元素（inline-block）</h3><ol>
+<li>图片： &lt;img&gt;</li>
+<li>单元格： &lt;td&gt; 、 &lt;th&gt;</li>
+<li>表单控件： &lt;input&gt; 、 &lt;textarea&gt; 、 &lt;select&gt; 、 &lt;button&gt;</li>
+<li>框架标签： &lt;iframe&gt;</li>
+</ol>
+<h2 id="4-修改元素的显示模式"><a href="#4-修改元素的显示模式" class="headerlink" title="4.修改元素的显示模式"></a>4.修改元素的显示模式</h2><p>通过 CSS 中的 display 属性可以修改元素的默认显示模式，常用值如下：</p>
+<p>none：元素会被隐藏。</p>
+<p>block：元素将作为块级元素显示。</p>
+<p>inline：元素将作为内联元素显示。</p>
+<p>inline-block：元素将作为行内块元素显示</p>
+<h2 id="5-盒子模型组成"><a href="#5-盒子模型组成" class="headerlink" title="5.盒子模型组成"></a>5.盒子模型组成</h2><ol>
+<li>margin（外边距）： 盒子与外界的距离。</li>
+<li>border（边框）： 盒子的边框。</li>
+<li>padding（内边距）： 紧贴内容的补白区域。</li>
+<li>content（内容）：元素中的文本或后代元素都是它的内容。</li>
+</ol>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/image__cY142gLrj.png"></p>
+<p>盒子的大小 &#x3D; content + 左右 padding + 左右 border 。</p>
+<h3 id="5-1-padding"><a href="#5-1-padding" class="headerlink" title="5.1 padding"></a>5.1 padding</h3><p>padding 复合属性的使用规则：</p>
+<ol>
+<li>padding: 10px; 四个方向内边距都是 10px 。</li>
+<li>padding: 10px 20px; 上 10px ，左右 20px 。（上下、左右）</li>
+<li>padding: 10px 20px 30px; 上 10px ，左右 20px ，下 30px 。（上、左右、下）</li>
+<li>padding: 10px 20px 30px 40px; 上 10px ，右 20px ，下 30px ，左 40px 。（上、右、</li>
+</ol>
+<p>下、左）</p>
+<p>注意点：</p>
+<ol>
+<li>padding 的值不能为负数。</li>
+<li>行内元素 的 左右内边距是没问题的，上下内边距不能完美的设置。</li>
+<li>块级元素、行内块元素，四个方向内边距都可以完美设置。</li>
+</ol>
+<h3 id="5-2-margin注意事项"><a href="#5-2-margin注意事项" class="headerlink" title="5.2 margin注意事项"></a>5.2 margin注意事项</h3><ul>
+<li>子元素的 margin ，是参考父元素的 content 计算的。（因为是父亲的 content 中承装着子元素）</li>
+<li>上 margin 、左 margin ：影响自己的位置；下 margin 、右 margin ：影响后面兄弟元素的位置。</li>
+<li>块级元素、行内块元素，均可以完美地设置四个方向的 margin ；但行内元素，左右margin 可以完美设置，上下 margin 设置无效。</li>
+<li>margin 的值也可以是 auto ，如果给一个块级元素设置左右 margin 都为 auto ，该块级元素会在父元素中水平居中。</li>
+<li>margin 的值可以是负值。</li>
+</ul>
+<h3 id="5-3-margin塌陷问题"><a href="#5-3-margin塌陷问题" class="headerlink" title="5.3 margin塌陷问题"></a>5.3 margin塌陷问题</h3><p>什么是 margin 塌陷？<br>第一个子元素的上 margin 会作用在父元素上，最后一个子元素的下 margin 会作用在父元素上。<br>如何解决 margin 塌陷？<br>方案一： 给父元素设置不为 0 的 padding 。<br>方案二： 给父元素设置宽度不为 0 的 border 。<br>方案三：给父元素设置 css 样式 overflow:hidden</p>
+<h3 id="5-4-margin合并问题"><a href="#5-4-margin合并问题" class="headerlink" title="5.4 margin合并问题"></a>5.4 margin合并问题</h3><p>什么是 margin 合并？</p>
+<p>上面兄弟元素的下外边距和下面兄弟元素的上外边距会合并，取一个最大的值，而不是相加。</p>
+<p>如何解决 margin 塌陷？</p>
+<p>无需解决，布局的时候上下的兄弟元素，只给一个设置上下外边距就可以了。</p>
+<h2 id="6-内容溢出"><a href="#6-内容溢出" class="headerlink" title="6.内容溢出"></a>6.内容溢出</h2><p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/image_qokxsScG64.png"></p>
+<h2 id="7-隐藏元素"><a href="#7-隐藏元素" class="headerlink" title="7.隐藏元素"></a>7.隐藏元素</h2><p>方式一：visibility 属性</p>
+<p>visibility 属性默认值是 show ，如果设置为 hidden ，元素会隐藏。</p>
+<p>元素看不见了，还占有原来的位置（元素的大小依然保持）。</p>
+<p>方式二： display 属性</p>
+<p>设置 display:none ，就可以让元素隐藏。</p>
+<p>彻底地隐藏，不但看不见，也不占用任何位置，没有大小宽高。</p>
+<h2 id="8-样式的继承"><a href="#8-样式的继承" class="headerlink" title="8.样式的继承"></a>8.样式的继承</h2><p>有些样式会继承，元素如果本身设置了某个样式，就使用本身设置的样式；但如果本身没有设置某个样式，会从父元素开始一级一级继承（优先继承离得近的祖先元素）。</p>
+<p>会继承的 css 属性：</p>
+<p>字体属性、文本属性、文字颜色等</p>
+<p>不会继承的 css 属性：</p>
+<p>边框、背景、内边距、外边距、宽高、溢出方式等</p>
+<p>一个规律：能继承的属性，都是不影响布局的，简单说：都是和盒子模型没关系的。</p>
+<h2 id="9-默认样式"><a href="#9-默认样式" class="headerlink" title="9.默认样式"></a>9.默认样式</h2><p>元素一般都有默认的样式，例如：</p>
+<ol>
+<li>&lt;a&gt; 元素：下划线、字体颜色、鼠标小手。</li>
+<li>&lt;h1&gt; ~ &lt;h6&gt; 元素： 文字加粗、文字大小、上下外边距。</li>
+<li>&lt;p&gt; 元素：上下外边距</li>
+<li>&lt;ul&gt; 、 ol 元素：左内边距</li>
+<li>body 元素： 8px 外边距（4个方向）</li>
+</ol>
+<p>优先级：元素的默认样式 &gt; 继承的样式，所以如果要重置元素的默认样式，选择器一定要直接选择器到该元素。</p>
+<h2 id="10-布局效果"><a href="#10-布局效果" class="headerlink" title="10.布局效果"></a>10.布局效果</h2><p>1.行内元素、行内块元素，可以被父元素当做文本处理</p>
+<p>即：可以像处理文本对齐一样，去处理：行内、行内块在父元素中的对齐。</p>
+<p>例如： text-align 、 line-height 、 text-indent 等。</p>
+<p>2.如何让子元素，在父亲中 水平居中：</p>
+<p>若子元素为块元素，给父元素加上： margin:0 auto; 。</p>
+<p>若子元素为行内元素、行内块元素，给父元素加上： text-align:center 。</p>
+<blockquote>
+<p>📌3.如何让子元素，在父亲中 垂直居中：</p>
+<ul>
+<li>若子元素为块元素，给子元素加上： margin-top ，值为：(父元素 content －子元素盒子</li>
+</ul>
+<p>总高) &#x2F; 2。</p>
+<ul>
+<li>若子元素为行内元素、行内块元素：</li>
+</ul>
+<p>让父元素的 height &#x3D; line-height ，每个子元素都加上： vertical-align:middle; 。</p>
+<p>补充：若想绝对垂直居中，父元素 font-size 设置为 0 。</p>
+</blockquote>
+<h2 id="11-元素之间的空白问题"><a href="#11-元素之间的空白问题" class="headerlink" title="11.元素之间的空白问题"></a>11.元素之间的空白问题</h2><p>产生的原因：</p>
+<p>行内元素、行内块元素，彼此之间的换行会被浏览器解析为一个空白字符。</p>
+<p>解决方案：</p>
+<ol>
+<li>方案一： 去掉换行和空格（不推荐）。</li>
+<li>方案二： 给父元素设置 font-size:0 ，再给需要显示文字的元素，单独设置字体大小（推</li>
+</ol>
+<p>荐）。</p>
+<h2 id="12-行内块的幽灵空白问题"><a href="#12-行内块的幽灵空白问题" class="headerlink" title="12.行内块的幽灵空白问题"></a>12.行内块的幽灵空白问题</h2><p>产生原因：</p>
+<p>行内块元素与文本的基线对齐，而文本的基线与文本最底端之间是有一定距离的。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/image_0DD9vs79A_.png"></p>
+<p>解决方案：</p>
+<p>&#x20;方案一： 给行行内块设置 vertical ，值不为 baseline 即可，设置为 middel 、 bottom 、top 均可。</p>
+<p>方案二： 若父元素中只有一张图片，没有文字，设置图片为 display:block 。</p>
+<p>方案三： 给父元素设置 font-size: 0 。如果该行内块内部还有文本，则需单独设置 font-size 。</p>
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>License</span></div>
+      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">Newer</div><a href="/2024/01/16/%E5%B8%83%E5%B1%80/">重置默认样式</a></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/01/16/%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7/">常用属性</a></div></section></div>
+
+
+
+
+  <div class="related-wrap md-text" id="comments">
+    <section class='header cmt-title cap theme'>
+      <p>快来参与讨论吧~</p>
+
+    </section>
+    <section class='body cmt-body beaudar'>
+      
+
+<svg class="loading" style="vertical-align:middle;fill:currentColor;overflow:hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="beaudar" repo="YYYutang/blogComments" issue-term="pathname" theme="github-light" input-position="top" comment-order="desc" loading="false" branch="main"></div>
+
+    </section>
+  </div>
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">$YuTang</a> 使用 <a href="$https://github.com/xaoxuu/hexo-theme-stellar/tree/1.27.0">$Stellar $1.27.0</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%95%BF%E5%BA%A6%E5%8D%95%E4%BD%8D"><span class="toc-text">1.长度单位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%85%83%E7%B4%A0%E7%9A%84%E6%98%BE%E7%A4%BA%E6%A8%A1%E5%BC%8F"><span class="toc-text">2.元素的显示模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1%E5%9D%97%E5%85%83%E7%B4%A0%EF%BC%88block%EF%BC%89"><span class="toc-text">2.1块元素（block）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2%E8%A1%8C%E5%86%85%E5%85%83%E7%B4%A0%EF%BC%88inline%EF%BC%89"><span class="toc-text">2.2行内元素（inline）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3%E8%A1%8C%E5%86%85%E5%9D%97%E5%85%83%E7%B4%A0%EF%BC%88inline-block%EF%BC%89"><span class="toc-text">2.3行内块元素（inline-block）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%80%BB%E7%BB%93"><span class="toc-text">3.总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%97%E5%85%83%E7%B4%A0%EF%BC%88block%EF%BC%89"><span class="toc-text">块元素（block）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E5%86%85%E5%85%83%E7%B4%A0%EF%BC%88inline%EF%BC%89"><span class="toc-text">行内元素（inline）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E5%86%85%E5%9D%97%E5%85%83%E7%B4%A0%EF%BC%88inline-block%EF%BC%89"><span class="toc-text">行内块元素（inline-block）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%BF%AE%E6%94%B9%E5%85%83%E7%B4%A0%E7%9A%84%E6%98%BE%E7%A4%BA%E6%A8%A1%E5%BC%8F"><span class="toc-text">4.修改元素的显示模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B%E7%BB%84%E6%88%90"><span class="toc-text">5.盒子模型组成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-padding"><span class="toc-text">5.1 padding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-margin%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">5.2 margin注意事项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-margin%E5%A1%8C%E9%99%B7%E9%97%AE%E9%A2%98"><span class="toc-text">5.3 margin塌陷问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-margin%E5%90%88%E5%B9%B6%E9%97%AE%E9%A2%98"><span class="toc-text">5.4 margin合并问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%86%85%E5%AE%B9%E6%BA%A2%E5%87%BA"><span class="toc-text">6.内容溢出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E9%9A%90%E8%97%8F%E5%85%83%E7%B4%A0"><span class="toc-text">7.隐藏元素</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%A0%B7%E5%BC%8F%E7%9A%84%E7%BB%A7%E6%89%BF"><span class="toc-text">8.样式的继承</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E9%BB%98%E8%AE%A4%E6%A0%B7%E5%BC%8F"><span class="toc-text">9.默认样式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%B8%83%E5%B1%80%E6%95%88%E6%9E%9C"><span class="toc-text">10.布局效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E5%85%83%E7%B4%A0%E4%B9%8B%E9%97%B4%E7%9A%84%E7%A9%BA%E7%99%BD%E9%97%AE%E9%A2%98"><span class="toc-text">11.元素之间的空白问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E8%A1%8C%E5%86%85%E5%9D%97%E7%9A%84%E5%B9%BD%E7%81%B5%E7%A9%BA%E7%99%BD%E9%97%AE%E9%A2%98"><span class="toc-text">12.行内块的幽灵空白问题</span></a></li></ol></div><div class="widget-footer">
+
+<a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>Scroll to Top</span></a></div></widget>
+</div></aside><div class='float-panel blur'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+<script type="text/javascript">
+  const ctx = {
+    date_suffix: {
+      just: `Just`,
+      min: `minutes ago`,
+      hour: `hours ago`,
+      day: `days ago`,
+    },
+    root : `/`,
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+  };
+  const deps = {
+    jquery: `https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js`,
+    marked: `https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+    
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      let retryTimes = 3;
+      utils.onLoading(el);
+      function req() {
+        return new Promise((resolve, reject) => {
+          let status = 0; // 0 等待 1 完成 2 超时
+          let timer = setTimeout(() => {
+            if (status === 0) {
+              status = 2;
+              timer = null;
+              reject('请求超时');
+              if (retryTimes == 0) {
+                onFailure();
+              }
+            }
+          }, 5000);
+          fetch(url).then(function(response) {
+            if (status !== 2) {
+              clearTimeout(timer);
+              resolve(response);
+              timer = null;
+              status = 1;
+            }
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          }).then(function(data) {
+            retryTimes = 0;
+            utils.onLoadSuccess(el);
+            callback(data);
+          }).catch(function(error) {
+            if (retryTimes > 0) {
+              retryTimes -= 1;
+              setTimeout(() => {
+                req();
+              }, 5000);
+            } else {
+              utils.onLoadFailure(el);
+              onFailure();
+            }
+          });
+        });
+      }
+      req();
+    },
+  };
+</script>
+
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.27.0" async></script>
+
+<!-- optional -->
+
+  <script>
+  function loadBeaudar() {
+    const els = document.querySelectorAll("#comments #beaudar");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.error(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://beaudar.lipk.org/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadBeaudar();
+  });
+</script>
+
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script><script defer src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+</script><script>
+  ctx.fancybox = {
+    selector: `.fancybox img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error)';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const els = document.getElementsByClassName('ds-memos');
+    if (els != undefined && els.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || null
+        }
+      });
+    })
+  }
+</script><script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          loop: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script><script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>
