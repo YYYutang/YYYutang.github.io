@@ -1,0 +1,682 @@
+
+<!DOCTYPE html><html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.27.0" theme-name="Stellar" theme-version="1.27.0">
+  
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>单点登录的四种实现方式 - 小璇妙妙屋</title>
+
+  
+  <meta name="description" content="在做单点登录功能的时候，在网络上搜索了很多文章，大部分都是站在后端如何处理session共享、有无状态登录的角度攥写的，并没有综合前端如何处理多个子系统之间传输token的角度来说明，故此整合了这样一篇笔记，从多个角度尽量全面地来说明单点登录的几种实方式。
+引入众所周知，HTTP是无状态的协议...">
+  
+  <meta name="keywords" content="项目">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.27.0">
+
+  
+    <link rel="shortcut icon" href="/picture/title.jpg">
+  
+
+  
+
+  
+</head>
+<body>
+
+<div class="l_body s:aa content tech" id="start" layout="post" ><aside class="l_left"><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/picture/title.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">小璇妙妙屋</div><div class="sub normal cap">冻手冻手！准备学习</div><div class="sub hover cap" style="opacity:0"> All the stars are closer</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
+
+
+<nav class="menu dis-select"><a class="nav-item" title="主页" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item active" title="博客" href="/posts/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="社交" href="/friends/" style="color:#FA6400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0" opacity=".5"/><path fill="currentColor" d="M17.712 5.453c1.047-.193 2.006-.259 2.797-.152c.77.103 1.536.393 1.956 1.064c.446.714.312 1.542-.012 2.258c-.33.728-.918 1.499-1.672 2.268c-1.516 1.547-3.836 3.226-6.597 4.697c-2.763 1.472-5.495 2.484-7.694 2.92c-1.095.217-2.098.299-2.923.201c-.8-.095-1.6-.383-2.032-1.075c-.47-.752-.296-1.63.07-2.379c.375-.768 1.032-1.586 1.872-2.403L4 12.416c0 .219.083.71.168 1.146c.045.23.09.444.123.596c-.652.666-1.098 1.263-1.339 1.756c-.277.567-.208.825-.145.925c.072.116.305.305.937.38c.609.073 1.44.018 2.455-.183c2.02-.4 4.613-1.351 7.28-2.772c2.667-1.42 4.85-3.015 6.23-4.423c.694-.707 1.15-1.334 1.377-1.836c.233-.515.167-.75.107-.844c-.07-.112-.289-.294-.883-.374c-.542-.072-1.272-.041-2.163.112L16.87 5.656c.338-.101.658-.17.842-.203"/></svg></a><a class="nav-item" title="更多" href="/more/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+
+
+<widget class="widget-wrapper user-card ghuser"><div class="widget-body ds-ghinfo" api="https://api.github.com/users/YYYutang# your github login username"><div class="avatar" ><img no-lazy type="img" id="avatar_url" src="/picture/title.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></div><p class="username" ff="title" type="text" id="name">&nbsp;</p><p class="bio" type="text" id="bio">&nbsp;</p><div class="buttons"><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=followers"><span class="title" type="text" id="followers">0</span><span class="desc">followers</span></a><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=following"><span class="title" type="text" id="following">0</span><span class="desc">following</span></a><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=repositories"><span class="title" type="text" id="public_repos">0</span><span class="desc">repos</span></a></div><a class="follow" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username"><svg aria-hidden="true" role="img" class="color-icon-primary" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" style="display:inline-block;user-select:none;vertical-align:text-bottom;overflow:visible"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>Follow</a></div></widget>
+
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2024/02/22/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%80%9D%E6%83%B3/"><span class="title">Javascript 面向对象</span></a><a class="item title" href="/2024/02/13/%E6%B7%B1%E5%85%A5%E5%AF%B9%E8%B1%A1/"><span class="title">Javascript 构造函数</span></a><a class="item title" href="/2024/02/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/"><span class="title">深浅拷贝及其实现方式</span></a><a class="item title" href="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/"><span class="title">盒子模型</span></a><a class="item title" href="/2023/06/18/%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6/"><span class="title">类式组件</span></a></div></widget>
+</div>
+
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/posts">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E9%A1%B9%E7%9B%AE/">项目</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-03-19T07:29:00.000Z">2024-03-19</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2024-03-19T08:33:44.820Z">2024-03-19</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>单点登录的四种实现方式</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><p>在做单点登录功能的时候，在网络上搜索了很多文章，大部分都是站在后端如何处理session共享、有无状态登录的角度攥写的，并没有综合前端如何处理多个子系统之间传输token的角度来说明，故此整合了这样一篇笔记，从多个角度尽量全面地来说明单点登录的几种实方式。</p>
+<h2 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h2><p>众所周知，HTTP是<strong>无状态</strong>的协议，这意味着<strong>服务器无法确认用户的信息</strong>。于是乎，W3C就提出了：给每一个用户都发一个通行证，无论谁访问的时候都需要携带通行证，这样服务器就可以从通行证上确认用户的信息。通行证就是<strong>Cookie</strong>。</p>
+<p>如果说Cookie是检查用户身上的”通行证“来确认用户的身份，那么Session就是通过检查服务器上的”客户明细表“来确认用户的身份的。<strong>Session相当于在服务器中建立了一份“客户明细表”</strong>。</p>
+<p>HTTP协议是无状态的，Session不能依据HTTP连接来判断是否为同一个用户。于是乎：服务器向用户浏览器发送了一个名为SESSIONID的Cookie，它的值是Session的id值。<strong>其实Session是依据Cookie来识别是否是同一个用户</strong>。</p>
+<p>所以，一般我们单系统实现登录会这样做：</p>
+<ul>
+<li><strong>登录</strong>：将用户信息保存在Session对象中</li>
+<li>如果在Session对象中能查到，说明已经登录</li>
+<li>如果在Session对象中查不到，说明没登录（或者已经退出了登录）</li>
+<li><strong>注销（退出登录）</strong>：从Session中删除用户的信息</li>
+<li><strong>记住我（关闭掉浏览器后，重新打开浏览器还能保持登录状态）</strong>：配合Cookie来用</li>
+</ul>
+<p>单系统登录功能主要是用Session保存用户信息来实现的，但我们清楚的是：多系统即可能有多个Tomcat，而Session是依赖当前系统的Tomcat，所以系统A的Session和系统B的Session是<strong>不共享</strong>的。</p>
+<p>解决系统之间Session不共享问题有一下几种方案：</p>
+<ul>
+<li>Tomcat集群Session全局复制（集群内每个tomcat的session完全同步）【会影响集群的性能呢，不建议】</li>
+<li>根据请求的IP进行<strong>Hash映射</strong>到对应的机器上（这就相当于请求的IP一直会访问同一个服务器）【如果服务器宕机了，会丢失了一大部分Session的数据，不建议】</li>
+<li>把Session数据放在Redis中（使用Redis模拟Session）【<strong>建议</strong>】</li>
+</ul>
+<p>我们可以将登录功能<strong>单独抽取</strong>出来，做成一个子系统。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/image_bobWdDjl1H.png"></p>
+<ul>
+<li>SSO系统生成一个token，并将用户信息存到Redis中，并设置过期时间</li>
+<li>其他系统请求SSO系统进行登录，得到SSO返回的token，写到Cookie中</li>
+<li>每次请求时，Cookie都会带上，拦截器得到token，判断是否已经登录</li>
+</ul>
+<p>到这里，其实我们会发现其实就两个变化：</p>
+<ul>
+<li>将登陆功能抽取为一个系统（SSO），其他系统请求SSO进行登录</li>
+<li>本来将用户信息存到Session，现在将用户信息存到Redis</li>
+</ul>
+<p>上面我们解决了Session不能共享的问题，但其实还有另一个问题。<strong>Cookie是不能跨域的</strong></p>
+<p>比如说，我们请求<code>&lt;https://www.google.com/&gt;</code>时，浏览器会自动把<code>google.com</code>的Cookie带过去给<code>google</code>的服务器，而不会把<code>&lt;https://www.baidu.com/&gt;</code>的Cookie带过去给<code>google</code>的服务器。</p>
+<p>这就意味着，<strong>由于域名不同</strong>，用户向系统A登录后，系统A返回给浏览器的Cookie，用户再请求系统B的时候不会将系统A的Cookie带过去。</p>
+<p>针对Cookie存在跨域问题，有几种解决方案：</p>
+<ol>
+<li>服务端将Cookie写到客户端后，客户端对Cookie进行解析，将Token解析出来，此后请求都把这个Token带上就行了</li>
+<li>多个域名共享Cookie，在写到客户端的时候设置Cookie的domain。</li>
+<li>将Token保存在SessionStroage中（不依赖Cookie就没有跨域的问题了）</li>
+</ol>
+<p>到这里，我们已经可以实现单点登录了。</p>
+<p>到目前为止，我们在单点登录的过程中遇到了这样几个问题：</p>
+<p>1、session共享问题（有状态登录）</p>
+<p>2、cookie跨域问题（解决token存储问题）</p>
+<p>其中第一个问题除了上面提到的几种方案之外，还可以通过做无状态登录来解决。</p>
+<p>接下来从这些方面来介绍目前存在的一些方案。</p>
+<h2 id="共享Session"><a href="#共享Session" class="headerlink" title="共享Session"></a><strong>共享Session</strong></h2><p>共享Session可谓是实现单点登录最直接、最简单的方式。将用户认证信息保存于Session中，即以Session内存储的值为用户凭证，这在单个站点内使用是很正常也很容易实现的，而在用户验证、用户信息管理与业务应用分离的场景下即会遇到单点登录的问题，在应用体系简单，子系统很少的情况下，可以考虑采用Session共享的方法来处理这个问题。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/image_jSmxzuO0gE.png"></p>
+<p>这个架构可以使用基于Redis的Session共享方案。将Session存储于Redis上，然后将整个系统的全局Cookie Domain设置于顶级域名上，这样SessionID就能在各个子系统间共享。分布式Session共享解决方案，这篇推荐大家看下。</p>
+<p>这个方案存在着严重的扩展性问题，首先，<a href="https://link.zhihu.com/?target=http://ASP.NET" title="http://ASP.NET">http://ASP.NET</a>的Session存储必须为SessionStateItemCollection对象，而存储的结构是经过序列化后经过加密存储的。</p>
+<p>并且当用户访问应用时，他首先做的就是将存储容器里的所有内容全部取出，并且反序列化为SessionStateItemCollection对象。</p>
+<p><strong>这就决定了他具有以下约束：</strong></p>
+<p>1.Session中所涉及的类型必须是子系统中共同拥有的（即程序集、类型都需要一致），这导致Session的使用受到诸多限制；</p>
+<p>2.跨顶级域名的情况完全无法处理；</p>
+<h2 id="基于OpenId的单点登录"><a href="#基于OpenId的单点登录" class="headerlink" title="基于OpenId的单点登录"></a>基于OpenId的单点登录</h2><p>这种单点登录将用户的身份标识信息简化为OpenId存放于客户端，当用户登录某个子系统时，将OpenId传送到服务端，服务端根据OpenId构造用户验证信息，多用于C&#x2F;S与B&#x2F;S相结合的系统，属于有状态登录，流程如下：</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/image_8Dm9yi7CNe.png"></p>
+<p>由上图可以看到，这套单点登录依赖于OpenId的传递，其验证的基础在于OpenId的存储以及发送。</p>
+<p>1.当用户第一次登录时，将用户名密码发送给验证服务；</p>
+<p>2.验证服务将用户标识OpenId返回到客户端；</p>
+<p>3.客户端进行存储；</p>
+<p>4.访问子系统时，将OpenId发送到子系统；</p>
+<p>5.子系统将OpenId转发到验证服务；</p>
+<p>6.验证服务将用户认证信息返回给子系统；</p>
+<p>7.子系统构建用户验证信息后将授权后的内容返回给客户端。</p>
+<p>这套单点登录验证机制的主要问题在于他基于C&#x2F;S架构下将用户的OpenId存储于客户端，在子系统之间发送OpenId，而B&#x2F;S模式下要做到这一点就显得较为困难。为了处理这个问题我们将引出下一种方式，这种方式将解决B&#x2F;S模式下的OpenId的存储、传递问题。</p>
+<h2 id="基于Cookie的OpenId存储方案"><a href="#基于Cookie的OpenId存储方案" class="headerlink" title="基于Cookie的OpenId存储方案"></a><strong>基于Cookie的OpenId存储方案</strong></h2><p>我们知道，Cookie的作用在于充当一个信息载体在Server端和Browser端进行信息传递，而Cookie一般是以域名为分割的，例如<a href="https://link.zhihu.com/?target=http://a.xxx.com" title="http://a.xxx.com">http://a.xxx.com</a>与<a href="https://link.zhihu.com/?target=http://b.xxx.com" title="http://b.xxx.com">http://b.xxx.com</a>的Cookie是不能互相访问的，但是子域名是可以访问上级域名的Cookie的。即<a href="https://link.zhihu.com/?target=http://a.xxx.com" title="http://a.xxx.com">http://a.xxx.com</a>和<a href="https://link.zhihu.com/?target=http://b.xxx.com" title="http://b.xxx.com">http://b.xxx.com</a>是可以访问<a href="https://link.zhihu.com/?target=http://xxx.com" title="http://xxx.com">http://xxx.com</a>下的Cookie的，于是就能将顶级域名的Cookie作为OpenId的载体。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/image_URe8yRFeoA.png"></p>
+<p>验证步骤和上第二个方法非常相似：</p>
+<p>1、 在提供验证服务的站点里登录；</p>
+<p>2、 将OpenId写入顶级域名Cookie里；</p>
+<p>3、 访问子系统（Cookie里带有OpenId）</p>
+<p>4、 子系统取出OpenId通过并向验证服务发送OpenId</p>
+<p>5、 返回用户认证信息</p>
+<p>6、 返回授权后的内容</p>
+<p>在以上两种方法中我们都可以看到通过OpenId解耦了Session共享方案中的类型等问题，并且构造用户验证信息将更灵活，子系统间的验证是相互独立的，但是在第三种方案里，我们基于所有子系统都是同一个顶级域名的假设，而在实际生产环境里有多个域名是很正常的事情，那么就不得不考虑跨域问题究竟如何解决。</p>
+<h2 id="基于jwt的无状态单点登录方案"><a href="#基于jwt的无状态单点登录方案" class="headerlink" title="基于jwt的无状态单点登录方案"></a>基于jwt的无状态单点登录方案</h2><h3 id="登录状态"><a href="#登录状态" class="headerlink" title="登录状态"></a>登录状态</h3><h4 id="无状态登录"><a href="#无状态登录" class="headerlink" title="无状态登录"></a>无状态登录</h4><p>微服务集群中的每个服务，对外提供的都是Rest风格的接口。而Rest风格的一个最重要的规范就是：服务的无状态性，即：</p>
+<ul>
+<li>服务端不保存任何客户端请求者信息</li>
+<li>客户端的每次请求必须具备自描述信息，通过这些信息识别客户端身份</li>
+</ul>
+<p>带来的好处是什么呢？</p>
+<ul>
+<li>客户端请求不依赖服务端的信息，任何多次请求不需要必须访问到同一台服务</li>
+<li>服务端的集群和状态对客户端透明</li>
+<li>服务端可以任意的迁移和伸缩</li>
+<li>减小服务端存储压力</li>
+</ul>
+<h4 id="无状态登录流程"><a href="#无状态登录流程" class="headerlink" title="无状态登录流程"></a>无状态登录流程</h4><p>无状态登录的流程：</p>
+<ul>
+<li>当客户端第一次请求服务时，服务端对用户进行信息认证（登录）</li>
+<li>认证通过，将用户信息进行加密形成token，返回给客户端，作为登录凭证</li>
+<li>以后每次请求，客户端都携带认证的token</li>
+<li>服务的对token进行解密，判断是否有效。</li>
+</ul>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/image_T1EzGqiK1Z.png"></p>
+<h3 id="jwt实现无状态登录"><a href="#jwt实现无状态登录" class="headerlink" title="jwt实现无状态登录"></a>jwt实现无状态登录</h3><p>JWT，全称是Json Web Token， 是JSON风格轻量级的授权和身份认证规范，可实现无状态、分布式的Web应用授权；</p>
+<h4 id="数据格式"><a href="#数据格式" class="headerlink" title="数据格式"></a>数据格式</h4><p>JWT包含三部分数据：</p>
+<ul>
+<li><p>Header：头部，通常头部有两部分信息：</p>
+<ul>
+<li>token类型：JWT</li>
+<li>加密方式：base64（HS256）</li>
+</ul>
+</li>
+<li><p>Payload：载荷，就是有效数据，一般包含下面信息：</p>
+<p>  用户身份信息（注意，这里因为采用base64编码，可解码，因此不要存放敏感信息）</p>
+<p>  注册声明：如token的签发时间，过期时间，签发人等<br>  这部分也会采用base64编码，得到第二部分数据</p>
+</li>
+<li><p>Signature：签名，是整个数据的认证信息。根据前两步的数据，再加上指定的密钥（secret）（不要泄漏，最好周期性更换），通指定的算法编码生成。首先，需要指定一个密码（secret）。该密码仅仅保存在服务器中，并且不能向用户公开。然后，使用<strong>标头中</strong>所指定的签名算法（默认为HS256）根据以下公式生成签名。</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">HMACSHA256</span>(<span class="title function_">base64UrlEncode</span>(header) + <span class="string">&quot;.&quot;</span> + <span class="title function_">base64UrlEncode</span>(claims), secret)</span><br></pre></td></tr></table></figure>
+
+<h4 id="JWT交互流程"><a href="#JWT交互流程" class="headerlink" title="JWT交互流程"></a>JWT交互流程</h4><p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/image_BpGjIRZz3l.png"></p>
+<ol>
+<li>用户登录</li>
+<li>服务的认证，通过后根据secret生成token</li>
+<li>将生成的token返回给浏览器，客户端在接收到服务器返回的JWT，就将其保存在Cookie或者localStoreage中，此后，客户端的每次请求都到带上Jwt。如果将它存储在cookie中，就可以自动发送，但是不会解决跨域，因此一般是将它放入到HTTP请求的Header Authorization字段中。当跨域时，也可以将JWT被放置于POST请求的数据主体中。</li>
+<li>用户每次请求携带token</li>
+<li>服务端利用公钥解读jwt签名，判断签名有效后，从Payload中获取用户信息</li>
+<li>处理请求，返回响应结果</li>
+</ol>
+<p>因为JWT签发的token中已经包含了用户的身份信息，并且每次请求都会携带，这样服务的就无需保存用户信息，甚至无需去<a target="_blank" rel="noopener" href="https://cloud.tencent.com/solution/database?from_column=20065&from=20065" title="数据库">数据库</a>查询，完全符合了Rest的无状态规范。</p>
+<h4 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h4><p>加密技术是对信息进行编码和解码的技术，编码是把原来可读信息（又称明文）译成代码形式（又称密文），其逆过程就是解码（解密），加密技术的要点是加密算法，加密算法可以分为三类：</p>
+<ul>
+<li>对称加密，如AES<ul>
+<li>基本原理：将明文分成N个组，然后使用密钥对各个组进行加密，形成各自的密文，最后把所有的分组密文进行合并，形成最终的密文。</li>
+<li>优势：算法公开、计算量小、加密速度快、加密效率高</li>
+<li>缺陷：双方都使用同样密钥，安全性得不到保证</li>
+</ul>
+</li>
+<li>非对称加密，如RSA<ul>
+<li><input disabled="" type="checkbox"> 基本原理：同时生成两把密钥：私钥和公钥，私钥隐秘保存，公钥可以下发给信任客户端<ul>
+<li><input disabled="" type="checkbox"> 私钥加密，持有公钥才可以解密</li>
+<li><input disabled="" type="checkbox"> 公钥加密，持有私钥才可解密</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> 优点：安全，难以破解</li>
+<li><input disabled="" type="checkbox"> 缺点：算法比较耗时</li>
+</ul>
+</li>
+<li>不可逆加密，如MD5，SHA<ul>
+<li><input disabled="" type="checkbox"> 基本原理：加密过程中不需要使用<strong>密钥</strong>，输入明文后由系统直接经过加密算法处理成密文，这种加密后的数据是无法被解密的，无法根据密文推算出明文。</li>
+</ul>
+</li>
+</ul>
+<h3 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h3><ul>
+<li>JWT不仅可用于认证，还可用于信息交换。善用JWT有助于减少服务器请求数据库的次数。</li>
+<li>生产的token可以包含基本信息，比如id、用户昵称、头像等信息，避免再次查库</li>
+<li>存储在客户端，不占用服务端的内存资源</li>
+<li>JWT默认不加密，但可以加密。生成原始令牌后，可以再次对其进行加密。</li>
+<li>当JWT未加密时，一些私密数据无法通过JWT传输。</li>
+<li>JWT的最大缺点是服务器不保存会话状态，所以在使用期间不可能取消令牌或更改令牌的权限。也就是说，一旦JWT签发，在有效期内将会一直有效。</li>
+<li>JWT本身包含认证信息，token是经过base64编码，所以可以解码，因此token加密前的对象不应该包含敏感信息，一旦信息泄露，任何人都可以获得令牌的所有权限。为了减少盗用，JWT的有效期不宜设置太长。对于某些重要操作，用户在使用时应该每次都进行进行身份验证。</li>
+<li>为了减少盗用和窃取，JWT不建议使用HTTP协议来传输代码，而是使用加密的HTTPS协议进行传输</li>
+</ul>
+<h2 id="CAS（Central-Authentication-Service）思想"><a href="#CAS（Central-Authentication-Service）思想" class="headerlink" title="CAS（Central Authentication Service）思想"></a>CAS（Central Authentication Service）思想</h2><p>CAS（Central Authentication Service）是一个开源的认证系统，它主要用于为Web应用程序创建和维护单点登录会话。它提供了一个安全可靠的方式来验证用户的身份，并且可以集成到各种Web应用程序中。<br>在单点登录（SSO）环境中，CAS扮演着非常重要的角色。它充当了一个中心认证服务器，负责验证用户的身份，并生成会话令牌，该令牌可以由其他应用程序用于验证用户的身份。这样，用户只需要在一个应用程序中登录，就可以在其他应用程序中无缝地访问，而无需再次输入用户名和密码。<br>CAS还提供了多种认证机制，包括基于令牌的认证、基于密码的认证和多因素认证等。此外，它还支持多种协议，如CAS、OAuth、SAML等，这使得它可以与各种不同的Web应用程序集成。</p>
+<p><strong>如果已经将登录单独抽取成系统出来</strong>，我们还能这样玩。现在我们有两个系统，分别是<code>www.java3y.com</code>和<code>www.java4y.com</code>，一个SSO<code>www.sso.com</code></p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://pic4.zhimg.com/80/v2-a8b500a0ec363e1751596fee923af34f_720w.webp"></p>
+<p>首先，用户想要访问系统A<code>www.java3y.com</code>受限的资源(比如说购物车功能，购物车功能需要登录后才能访问)，系统A<code>www.java3y.com</code>发现用户并没有登录，于是<strong>重定向到sso认证中心，并将自己的地址作为参数</strong>。请求的地址如下：</p>
+<p><code>www.sso.com?service=www.java3y.com</code></p>
+<p>sso认证中心发现用户未登录，将用户引导至登录页面，用户进行输入用户名和密码进行登录，用户与认证中心建立<strong>全局会话（生成一份Token，写到Cookie中，保存在浏览器上）</strong></p>
+<blockquote>
+<p>全局会话是若干客户端通过浏览器和单一认证中心之间建立并保持的会话，当某一客户端重定向访问认证中心进行首次登录操作时，浏览器地址栏会由客户端的域名变为认证中心的域名，相当于浏览器发起了一次访问认证中心的请求并建立起全局会话，此时全局会话的JSESSIONID会自动地被浏览器保存在认证中心域名下的cookie中。后续其它客户端再在此台浏览器重定向访问认证中心时，由于浏览器地址栏请求的域名都是认证中心的域名，浏览器会自动带上该域名的cookie访问认证中心，由于cookie中jsessionid相同的，所以是一个会话，称为全局会话，实现了session共享。</p>
+</blockquote>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://pic2.zhimg.com/80/v2-ae7694e8cb71148aea0b0dd2fccd573d_720w.webp"></p>
+<p>随后，认证中心<strong>重定向回系统A</strong>，并把Token携带过去给系统A，重定向的地址如下：</p>
+<p><code>www.java3y.com?token=xxxxxxx</code></p>
+<p>接着，系统A去sso认证中心验证这个Token是否正确，如果正确，则系统A和用户建立局部会话（<strong>创建Session</strong>）。到此，系统A和用户已经是登录状态了。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://pic2.zhimg.com/80/v2-8ce6dc1fdf9b8eb279292acfa2f6f6ed_720w.webp"></p>
+<p>此时，用户想要访问系统B<code>www.java4y.com</code>受限的资源(比如说订单功能，订单功能需要登录后才能访问)，系统B<code>www.java4y.com</code>发现用户并没有登录，于是<strong>重定向到sso认证中心，并将自己的地址作为参数</strong>。请求的地址如下：</p>
+<p><code>www.sso.com?service=www.java4y.com</code></p>
+<p>注意，因为之前用户与认证中心<code>www.sso.com</code>已经建立了全局会话（当时已经把Cookie保存到浏览器上了），所以这次系统B<strong>重定向</strong>到认证中心<code>www.sso.com</code>是可以带上Cookie的。</p>
+<p>认证中心<strong>根据带过来的Cookie</strong>发现已经与用户建立了全局会话了，认证中心<strong>重定向回系统B</strong>，并把Token携带过去给系统B，重定向的地址如下：</p>
+<p><code>www.java4y.com?token=xxxxxxx</code></p>
+<p>接着，系统B去sso认证中心验证这个Token是否正确，如果正确，则系统B和用户建立局部会话（<strong>创建Session</strong>）。到此，系统B和用户已经是登录状态了。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://pic3.zhimg.com/80/v2-9e07942808b0e245ae915e31fd780012_720w.webp"></p>
+<p>看到这里，其实就可以理解为SSO认证中心就类似一个<strong>中转站</strong>，这里实现的仍然是一个有状态登录。</p>
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>License</span></div>
+      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+    <section id="share">
+      <div class="header"><span>Share</span></div>
+      <div class="body">
+        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://yyyutang.github.io/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" /></div>
+        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://yyyutang.github.io/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/&title=单点登录的四种实现方式 - 小璇妙妙屋&pics=/picture/blog.jpg&summary=在做单点登录功能的时候，在网络上搜索了很多文章，大部分都是站在后端如何处理session共享、有无状态登录的角度攥写的，并没有综合前端如何处理多个子系统之间传输token的角度来说明，故此整合了这样一篇笔记，从多个角度尽量全面地来说明..."><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=单点登录的四种实现方式 - 小璇妙妙屋&amp;body=https://yyyutang.github.io/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;Copied!&quot;)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
+        
+        <div class="qrcode" id="qrcode-wechat" style="opacity:0;height:0">
+          <img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://yyyutang.github.io/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/"/>
+        </div>
+        
+      </div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/03/17/%E4%B8%8A%E4%B8%87%E6%9D%A1%E6%95%B0%E6%8D%AE%E6%B8%B2%E6%9F%93%E4%BC%98%E5%8C%96/">大量数据渲染的优化方案</a></div></section></div>
+
+
+
+
+  <div class="related-wrap md-text" id="comments">
+    <section class='header cmt-title cap theme'>
+      <p>快来参与讨论吧~</p>
+
+    </section>
+    <section class='body cmt-body beaudar'>
+      
+
+<svg class="loading" style="vertical-align:middle;fill:currentColor;overflow:hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="beaudar" repo="YYYutang/blogComments" issue-term="pathname" theme="github-light" input-position="top" comment-order="desc" loading="false" branch="main"></div>
+
+    </section>
+  </div>
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">$YuTang</a> 使用 <a href="$https://github.com/xaoxuu/hexo-theme-stellar/tree/1.27.0">$Stellar $1.27.0</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E5%85%A5"><span class="toc-text">引入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B1%E4%BA%ABSession"><span class="toc-text">共享Session</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8EOpenId%E7%9A%84%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95"><span class="toc-text">基于OpenId的单点登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8ECookie%E7%9A%84OpenId%E5%AD%98%E5%82%A8%E6%96%B9%E6%A1%88"><span class="toc-text">基于Cookie的OpenId存储方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8Ejwt%E7%9A%84%E6%97%A0%E7%8A%B6%E6%80%81%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E6%96%B9%E6%A1%88"><span class="toc-text">基于jwt的无状态单点登录方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E7%8A%B6%E6%80%81"><span class="toc-text">登录状态</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E7%8A%B6%E6%80%81%E7%99%BB%E5%BD%95"><span class="toc-text">无状态登录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E7%8A%B6%E6%80%81%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B"><span class="toc-text">无状态登录流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jwt%E5%AE%9E%E7%8E%B0%E6%97%A0%E7%8A%B6%E6%80%81%E7%99%BB%E5%BD%95"><span class="toc-text">jwt实现无状态登录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F"><span class="toc-text">数据格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JWT%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B"><span class="toc-text">JWT交互流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">非对称加密</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CAS%EF%BC%88Central-Authentication-Service%EF%BC%89%E6%80%9D%E6%83%B3"><span class="toc-text">CAS（Central Authentication Service）思想</span></a></li></ol></div><div class="widget-footer">
+
+<a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>Scroll to Top</span></a></div></widget>
+</div></aside><div class='float-panel blur'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+<script type="text/javascript">
+  const ctx = {
+    date_suffix: {
+      just: `Just`,
+      min: `minutes ago`,
+      hour: `hours ago`,
+      day: `days ago`,
+    },
+    root : `/`,
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+  };
+  const deps = {
+    jquery: `https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js`,
+    marked: `https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+    
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      let retryTimes = 3;
+      utils.onLoading(el);
+      function req() {
+        return new Promise((resolve, reject) => {
+          let status = 0; // 0 等待 1 完成 2 超时
+          let timer = setTimeout(() => {
+            if (status === 0) {
+              status = 2;
+              timer = null;
+              reject('请求超时');
+              if (retryTimes == 0) {
+                onFailure();
+              }
+            }
+          }, 5000);
+          fetch(url).then(function(response) {
+            if (status !== 2) {
+              clearTimeout(timer);
+              resolve(response);
+              timer = null;
+              status = 1;
+            }
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          }).then(function(data) {
+            retryTimes = 0;
+            utils.onLoadSuccess(el);
+            callback(data);
+          }).catch(function(error) {
+            if (retryTimes > 0) {
+              retryTimes -= 1;
+              setTimeout(() => {
+                req();
+              }, 5000);
+            } else {
+              utils.onLoadFailure(el);
+              onFailure();
+            }
+          });
+        });
+      }
+      req();
+    },
+  };
+</script>
+
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.27.0" async></script>
+
+<!-- optional -->
+
+  <script>
+  function loadBeaudar() {
+    const els = document.querySelectorAll("#comments #beaudar");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.error(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://beaudar.lipk.org/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadBeaudar();
+  });
+</script>
+
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script><script defer src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+</script><script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          loop: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script><script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>
