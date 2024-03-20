@@ -1,0 +1,614 @@
+
+<!DOCTYPE html><html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.27.0" theme-name="Stellar" theme-version="1.27.0">
+  
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>文件上传的n种实现方式 - 小璇妙妙屋</title>
+
+  
+  <meta name="description" content="这篇文章按照场景的不同分别讲述了几种文件上传的实现方式以及原理。分别包括：
+
+ 通过form-data格式上传文件
+ 通过base64格式上传图片
+ 前端选择图片时需要预览，并且需要前端为文件名起一个唯一的标识符的场景
+ 前端需要实时展示文件上传进度的场景
+ 有多个文件需要批量上传并且均需展示...">
+  
+  <meta name="keywords" content="项目">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.27.0">
+
+  
+    <link rel="shortcut icon" href="/picture/title.jpg">
+  
+
+  
+
+  
+</head>
+<body>
+
+<div class="l_body s:aa content tech" id="start" layout="post" ><aside class="l_left"><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/picture/title.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">小璇妙妙屋</div><div class="sub normal cap">冻手冻手！准备学习</div><div class="sub hover cap" style="opacity:0"> All the stars are closer</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
+
+
+<nav class="menu dis-select"><a class="nav-item" title="主页" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item active" title="博客" href="/posts/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="社交" href="/friends/" style="color:#FA6400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0" opacity=".5"/><path fill="currentColor" d="M17.712 5.453c1.047-.193 2.006-.259 2.797-.152c.77.103 1.536.393 1.956 1.064c.446.714.312 1.542-.012 2.258c-.33.728-.918 1.499-1.672 2.268c-1.516 1.547-3.836 3.226-6.597 4.697c-2.763 1.472-5.495 2.484-7.694 2.92c-1.095.217-2.098.299-2.923.201c-.8-.095-1.6-.383-2.032-1.075c-.47-.752-.296-1.63.07-2.379c.375-.768 1.032-1.586 1.872-2.403L4 12.416c0 .219.083.71.168 1.146c.045.23.09.444.123.596c-.652.666-1.098 1.263-1.339 1.756c-.277.567-.208.825-.145.925c.072.116.305.305.937.38c.609.073 1.44.018 2.455-.183c2.02-.4 4.613-1.351 7.28-2.772c2.667-1.42 4.85-3.015 6.23-4.423c.694-.707 1.15-1.334 1.377-1.836c.233-.515.167-.75.107-.844c-.07-.112-.289-.294-.883-.374c-.542-.072-1.272-.041-2.163.112L16.87 5.656c.338-.101.658-.17.842-.203"/></svg></a><a class="nav-item" title="更多" href="/more/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+
+
+<widget class="widget-wrapper user-card ghuser"><div class="widget-body ds-ghinfo" api="https://api.github.com/users/YYYutang# your github login username"><div class="avatar" ><img no-lazy type="img" id="avatar_url" src="/picture/title.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></div><p class="username" ff="title" type="text" id="name">&nbsp;</p><p class="bio" type="text" id="bio">&nbsp;</p><div class="buttons"><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=followers"><span class="title" type="text" id="followers">0</span><span class="desc">followers</span></a><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=following"><span class="title" type="text" id="following">0</span><span class="desc">following</span></a><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=repositories"><span class="title" type="text" id="public_repos">0</span><span class="desc">repos</span></a></div><a class="follow" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username"><svg aria-hidden="true" role="img" class="color-icon-primary" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" style="display:inline-block;user-select:none;vertical-align:text-bottom;overflow:visible"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>Follow</a></div></widget>
+
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2024/02/22/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%80%9D%E6%83%B3/"><span class="title">Javascript 面向对象</span></a><a class="item title" href="/2024/02/13/%E6%B7%B1%E5%85%A5%E5%AF%B9%E8%B1%A1/"><span class="title">Javascript 构造函数</span></a><a class="item title" href="/2024/02/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/"><span class="title">深浅拷贝及其实现方式</span></a><a class="item title" href="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/"><span class="title">盒子模型</span></a><a class="item title" href="/2023/06/18/%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6/"><span class="title">类式组件</span></a></div></widget>
+</div>
+
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/posts">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E9%A1%B9%E7%9B%AE/">项目</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-03-20T10:41:00.000Z">2024-03-20</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2024-03-20T10:43:43.201Z">2024-03-20</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>文件上传的n种实现方式</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><p>这篇文章按照场景的不同分别讲述了几种文件上传的实现方式以及原理。分别包括：</p>
+<ol>
+<li><input disabled="" type="checkbox"> 通过form-data格式上传文件</li>
+<li><input disabled="" type="checkbox"> 通过base64格式上传图片</li>
+<li><input disabled="" type="checkbox"> 前端选择图片时需要预览，并且需要前端为文件名起一个唯一的标识符的场景</li>
+<li><input disabled="" type="checkbox"> 前端需要实时展示文件上传进度的场景</li>
+<li><input disabled="" type="checkbox"> 有多个文件需要批量上传并且均需展示进度条的场景</li>
+<li><input disabled="" type="checkbox"> 拖拽上传的实现</li>
+<li><input disabled="" type="checkbox"> 大文件分片上传以及断点重传功能。</li>
+</ol>
+<h2 id="通过form-data格式上传文件"><a href="#通过form-data格式上传文件" class="headerlink" title="通过form-data格式上传文件"></a>通过form-data格式上传文件</h2><p>对于文件上传，我们需要设置请求头为<code>content-type:multipart/form-data</code></p>
+<p>因为文件是以二进制的形式存在，其作用是专门用于传输大型二进制数据，效率高</p>
+<p>传统前端文件上传的表单结构如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=<span class="string">&quot;http://localhost:8080/api/upload&quot;</span> method=<span class="string">&quot;post&quot;</span> enctype=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;file&quot;</span> <span class="attr">id</span>=<span class="string">&quot;file&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&quot;</span> <span class="attr">multiple</span>=<span class="string">&quot;multiple&quot;</span> /&gt;</span></span></span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;提交&quot;</span>/&gt;</span></span></span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+
+<p><code>action</code> 就是我们的提交到的接口，<code>enctype=&quot;multipart/form-data&quot;</code> 就是指定上传文件格式，<code>input</code> 的 <code>name</code> 属性一定要等于<code>file</code></p>
+<p>注：此处后端使用multiparty实现文件上传处理 和form-data解析</p>
+<p>multiparty会自动为文件生成一个hash值编译后的文件名，防止文件名重复出现覆盖的情况</p>
+<h2 id="通过base64格式上传图片"><a href="#通过base64格式上传图片" class="headerlink" title="通过base64格式上传图片"></a>通过base64格式上传图片</h2><p>将图片转化为base64格式的方法有两种</p>
+<p>1、image+canvas</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">getBase64Image</span> = src =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> img = <span class="keyword">new</span> <span class="title class_">Image</span>()</span><br><span class="line">        img.<span class="property">crossOrigin</span> = <span class="string">&#x27;&#x27;</span></span><br><span class="line">        img.<span class="property">src</span> = src</span><br><span class="line">        img.<span class="property">onload</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> canvas = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;canvas&#x27;</span>)</span><br><span class="line">            canvas.<span class="property">width</span> = img.<span class="property">width</span></span><br><span class="line">            canvas.<span class="property">height</span> = img.<span class="property">height</span></span><br><span class="line">            <span class="keyword">const</span> ctx = canvas.<span class="title function_">getContext</span>(<span class="string">&#x27;2d&#x27;</span>)</span><br><span class="line">            ctx?.<span class="title function_">drawImage</span>(img, <span class="number">0</span>, <span class="number">0</span>, img.<span class="property">width</span>, img.<span class="property">height</span>)</span><br><span class="line">            <span class="keyword">const</span> ext = img.<span class="property">src</span>.<span class="title function_">substring</span>(img.<span class="property">src</span>.<span class="title function_">lastIndexOf</span>(<span class="string">&#x27;.&#x27;</span>) + <span class="number">1</span>).<span class="title function_">toLowerCase</span>()</span><br><span class="line">            <span class="keyword">const</span> dataURL = canvas.<span class="title function_">toDataURL</span>(<span class="string">&#x27;image/&#x27;</span> + ext)</span><br><span class="line">            <span class="title function_">resolve</span>(dataURL)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、xhr+FileReader&#x20;</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>readAsDataURL</code> ， 这个方法会返回一个你得到的这个对象的一个base64的地址，但是这个地址，你会发现你的文件越大，这个地址就越长，其实这个地址是一个<code>Base64</code>编码的文件数据字符串</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">changeBase64</span> = file =&gt; &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> fileReader = <span class="keyword">new</span> <span class="title class_">FileReader</span>()</span><br><span class="line">            <span class="comment">//FileReader里面有个方法readAsDataURL 可以将图片转base64进制</span></span><br><span class="line">            fileReader.<span class="title function_">readAsDataURL</span>(file)</span><br><span class="line">            <span class="comment">// onload可以监听转换完成后</span></span><br><span class="line">            fileReader.<span class="property">onload</span> = <span class="function"><span class="params">ev</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="title function_">resolve</span>(ev.<span class="property">target</span>.<span class="property">result</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>传送的时候需要使用encodeURIComponent方法防止base64中的一些特殊字符被识别为其他内容，并且设置请求头</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">data = <span class="keyword">await</span> instance.<span class="title function_">post</span>(<span class="string">&#x27;/upload_single_base64&#x27;</span>, &#123;</span><br><span class="line">                <span class="attr">file</span>: <span class="built_in">encodeURIComponent</span>(<span class="title class_">Base64</span>),</span><br><span class="line">                <span class="attr">filename</span>: _file.<span class="property">name</span></span><br><span class="line">            &#125;, &#123;</span><br><span class="line">                <span class="attr">headers</span>: &#123;</span><br><span class="line">                    <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/x-www-form-urlencoded&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="预览图片，处理文件名"><a href="#预览图片，处理文件名" class="headerlink" title="预览图片，处理文件名"></a>预览图片，处理文件名</h2><p>缩略图的实现使用给img的src绑定base64来处理。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">base64 = <span class="keyword">await</span> <span class="title function_">changeBase64</span>(_file)</span><br><span class="line">        upload_abbre.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;block&#x27;</span></span><br><span class="line">        upload_abbre_img.<span class="property">src</span> = base64</span><br></pre></td></tr></table></figure>
+
+<p>文件名的处理需要用到<code>readAsArrayBuffer</code> 和sparkMD5，下面对这两个方法分别做介绍。</p>
+<p><code>readAsArrayBuffer</code> 读取指定的Blob中的内容, 一旦完成，result 属性中保存的将是被读取文件的 <a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=YZvy9U+EOcK4Z2nC//xKdQ==.hHSp8ufxKQYMoRxVPOSy6Z6TMlz/GRlAw6iVG6wl+U9PJqxOEFUwezUN+ldMAnOoORogpIBJBbQAv0hv9kVMYQ==" title="ArrayBuffer">ArrayBuffer</a>数据对象。</p>
+<blockquote>
+<p><strong><code>ArrayBuffer</code></strong> 对象用来表示通用的原始二进制数据缓冲区</p>
+</blockquote>
+<p>SparkMD5是一种JavaScript库，用于计算文件的MD5哈希值。它可以用于在浏览器中计算文件的哈希值，而不需要将整个文件上传到服务器。SparkMD5通过分块处理文件，每个块使用JavaScript的ArrayBuffer对象来读取，以便可以快速计算文件的哈希值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">changeBuffer</span> = file =&gt; &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">let</span> fileReader = <span class="keyword">new</span> <span class="title class_">FileReader</span>()</span><br><span class="line">            fileReader.<span class="title function_">readAsArrayBuffer</span>(file)</span><br><span class="line">            fileReader.<span class="property">onload</span> = <span class="function"><span class="params">ev</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">let</span> buffer = ev.<span class="property">target</span>.<span class="property">result</span>,</span><br><span class="line">                    spark = <span class="keyword">new</span> <span class="title class_">SparkMD5</span>.<span class="title class_">ArrayBuffer</span>(),</span><br><span class="line">                    <span class="title class_">Hash</span>;</span><br><span class="line">                spark.<span class="title function_">append</span>(buffer)</span><br><span class="line">                <span class="title class_">Hash</span> = spark.<span class="title function_">end</span>()</span><br><span class="line">                suffix = <span class="regexp">/\.([a-zA-Z0-9]+)$/</span>.<span class="title function_">exec</span>(_file.<span class="property">name</span>)[<span class="number">1</span>]</span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(buffer)</span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(spark)</span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Hash</span>)</span><br><span class="line">                <span class="title function_">resolve</span>(&#123; buffer, <span class="title class_">Hash</span>, suffix, <span class="attr">filename</span>: <span class="string">`<span class="subst">$&#123;Hash&#125;</span>.<span class="subst">$&#123;suffix&#125;</span>`</span> &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们创建了一个SparkMD5.ArrayBuffer实例和一个FileReader实例。当用户选择一个文件后，我们使用FileReader读取文件并将数据附加到SparkMD5实例中。最后，我们调用SparkMD5的end()方法来计算文件的哈希值，随后获取文件原本的后缀值拼接到我们生成的哈希值后，作为文件的新文件名。</p>
+<h2 id="上传进度条"><a href="#上传进度条" class="headerlink" title="上传进度条"></a>上传进度条</h2><p>使用axios提供的onUploadProgress来实时获取文件上传进度，这个API的实现实际是基于XMLHttpRequest的upload事件封装的，upload事件本身就提供loaded和total属性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">data = <span class="keyword">await</span> instance.<span class="title function_">post</span>(<span class="string">&#x27;/upload_single&#x27;</span>, formData, &#123;</span><br><span class="line">             <span class="title function_">onUploadProgress</span>(<span class="params">ev</span>) &#123;</span><br><span class="line">                 <span class="keyword">let</span> &#123; loaded, total &#125; = ev</span><br><span class="line">                 upload_progress.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;block&#x27;</span></span><br><span class="line">                 upload_progress_value.<span class="property">style</span>.<span class="property">width</span> = <span class="string">`<span class="subst">$&#123;loaded / total * <span class="number">100</span>&#125;</span>%`</span></span><br><span class="line">             &#125;</span><br><span class="line">         &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，我们POST了一个请求到&#x2F;upload_single，并传递了一个对象。该对象包含一个onUploadProgress.属性，该属性是一个回调函数。每当上传进度发生变化时，该函数会被调用。我们可以在该函数中将上传进度百分比输出到控制台。</p>
+<h2 id="多文件上传"><a href="#多文件上传" class="headerlink" title="多文件上传"></a>多文件上传</h2><p>html结构</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;div <span class="keyword">class</span>=<span class="string">&quot;item&quot;</span>&gt;</span><br><span class="line">          <span class="language-xml"><span class="tag">&lt;<span class="name">h3</span>&gt;</span>多文件上传<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span></span><br><span class="line">          <span class="language-xml"><span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">&quot;upload_box&quot;</span> <span class="attr">id</span>=<span class="string">&quot;upload5&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">              <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">class</span>=<span class="string">&quot;upload_inp&quot;</span> <span class="attr">multiple</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">              <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;upload_button_box&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                  <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;upload_button select&quot;</span>&gt;</span>选择文件<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                  <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;upload_button upload&quot;</span>&gt;</span>上传到服务器<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">              <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">              <span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">&quot;upload_list&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">              <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;/<span class="name">section</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>除了通过循环发送每个文件的请求之外，这里还有一些需要处理的小问题。</p>
+<p>首先就是当我们选择完文件后，想要删除其中任意一个，如何为每一个文件绑定一个唯一的id值以确保我们能获取到正确的待删除文件。这里使用random生成随机数再乘以当前的时间来确保每一个文件的id都不同。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">createRandom</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> ran = <span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="keyword">new</span> <span class="title class_">Date</span>()</span><br><span class="line">    <span class="keyword">return</span> ran.<span class="title function_">toString</span>(<span class="number">16</span>).<span class="title function_">replace</span>(<span class="string">&#x27;.&#x27;</span>, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">_files = <span class="title class_">Array</span>.<span class="title function_">from</span>(upload_inp.<span class="property">files</span>)</span><br><span class="line">       <span class="keyword">let</span> str = <span class="string">``</span></span><br><span class="line">       _files = _files.<span class="title function_">map</span>(<span class="function"><span class="params">file</span> =&gt;</span> &#123;</span><br><span class="line">           <span class="keyword">return</span> &#123;</span><br><span class="line">               file,</span><br><span class="line">               <span class="attr">filename</span>: file.<span class="property">name</span>,</span><br><span class="line">               <span class="attr">key</span>: <span class="title function_">createRandom</span>()</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;)</span><br><span class="line">       _files.<span class="title function_">forEach</span>(<span class="function">(<span class="params">item, index</span>) =&gt;</span> &#123;</span><br><span class="line">           str += <span class="string">`&lt;li key=<span class="subst">$&#123;item.key&#125;</span>&gt;</span></span><br><span class="line"><span class="string">           &lt;span&gt;文件<span class="subst">$&#123;index + <span class="number">1</span>&#125;</span>：<span class="subst">$&#123;item.filename&#125;</span>&lt;/span&gt;</span></span><br><span class="line"><span class="string">           &lt;span&gt;&lt;em&gt;移除&lt;/em&gt;&lt;/span&gt;</span></span><br><span class="line"><span class="string">           &lt;/li&gt;`</span></span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>循环发送请求</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> upload_list_arr = <span class="title class_">Array</span>.<span class="title function_">from</span>(upload_list.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;li&#x27;</span>))</span><br><span class="line">       _files = _files.<span class="title function_">map</span>(<span class="function"><span class="params">item</span> =&gt;</span> &#123;</span><br><span class="line">           <span class="keyword">let</span> fm = <span class="keyword">new</span> <span class="title class_">FormData</span></span><br><span class="line">           <span class="comment">//获取当前循环的li</span></span><br><span class="line">           <span class="keyword">let</span> curLi = upload_list_arr.<span class="title function_">find</span>(<span class="function"><span class="params">liBox</span> =&gt;</span> liBox.<span class="title function_">getAttribute</span>(<span class="string">&#x27;key&#x27;</span>) === item.<span class="property">key</span>),</span><br><span class="line">           <span class="comment">//获取最后一个span，复写删除变成百分比</span></span><br><span class="line">               curSpan = curLi ? curLi.<span class="title function_">querySelector</span>(<span class="string">&#x27;span:nth-last-child(1)&#x27;</span>) : <span class="literal">null</span>;</span><br><span class="line">           fm.<span class="title function_">append</span>(<span class="string">&#x27;file&#x27;</span>, item.<span class="property">file</span>)</span><br><span class="line">           fm.<span class="title function_">append</span>(<span class="string">&#x27;filename&#x27;</span>, item.<span class="property">filename</span>)</span><br><span class="line">           <span class="keyword">return</span> instance.<span class="title function_">post</span>(<span class="string">&#x27;upload_single&#x27;</span>, fm, &#123;</span><br><span class="line">               <span class="title function_">onUploadProgress</span>(<span class="params">ev</span>) &#123;</span><br><span class="line">                   <span class="comment">//检测每一个上传进度</span></span><br><span class="line">                   curSpan.<span class="property">innerHTML</span> = <span class="string">`<span class="subst">$&#123;(ev.loaded / ev.total * <span class="number">100</span>).toFixed(<span class="number">2</span>)&#125;</span>%`</span></span><br><span class="line">               &#125;</span><br><span class="line">           &#125;).<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">               <span class="keyword">if</span> (+data.<span class="property">code</span> === <span class="number">0</span>) &#123;</span><br><span class="line">                   <span class="keyword">if</span> (curSpan) &#123;</span><br><span class="line">                       curSpan.<span class="property">innerHTML</span> = <span class="string">`100%`</span></span><br><span class="line">                   &#125;</span><br><span class="line">                   <span class="keyword">return</span></span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">reject</span>()</span><br><span class="line">           &#125;)</span><br><span class="line">       &#125;)</span><br><span class="line">       <span class="title class_">Promise</span>.<span class="title function_">all</span>(_files).<span class="title function_">then</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">           <span class="title function_">alert</span>(<span class="string">&#x27;恭喜您，所有文件都上传成功&#x27;</span>)</span><br><span class="line">       &#125;).<span class="title function_">catch</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">           <span class="title function_">alert</span>(<span class="string">&#x27;上传过程中出现问题，请稍后再试&#x27;</span>)</span><br><span class="line">       &#125;).<span class="title function_">finally</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">           <span class="title function_">handleDisable</span>(<span class="literal">false</span>)</span><br><span class="line">           _files = []</span><br><span class="line">           upload_list.<span class="property">innerHTML</span> = <span class="string">&#x27;&#x27;</span></span><br><span class="line">           upload_list.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;none&#x27;</span></span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="拖拽上传"><a href="#拖拽上传" class="headerlink" title="拖拽上传"></a>拖拽上传</h2><p>主要实现方式为监听drop事件，注意当鼠标拖入目标区域时，dragover事件会被一直触发，这里需要手动阻止默认事件的发生。</p>
+<p>另外，上传的过程中，目标区域需要设置一个遮罩层提示用户上传文件正在进行中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">upload.<span class="title function_">addEventListener</span>(<span class="string">&#x27;drop&#x27;</span>, <span class="keyword">function</span> (<span class="params">ev</span>) &#123;</span><br><span class="line">       ev.<span class="title function_">preventDefault</span>()</span><br><span class="line">       <span class="keyword">let</span> file = ev.<span class="property">dataTransfer</span>.<span class="property">files</span>[<span class="number">0</span>]</span><br><span class="line">       <span class="keyword">if</span> (!file) <span class="keyword">return</span></span><br><span class="line">       <span class="title function_">uploadFile</span>(file)</span><br><span class="line">   &#125;)</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">uploadFile</span> = <span class="keyword">async</span> file =&gt; &#123;</span><br><span class="line">       <span class="keyword">if</span> (isRun) <span class="keyword">return</span></span><br><span class="line">       isRun = <span class="literal">true</span></span><br><span class="line">       <span class="comment">//显示遮罩层</span></span><br><span class="line">       upload_mark.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;block&#x27;</span></span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           <span class="keyword">let</span> fm = <span class="keyword">new</span> <span class="title class_">FormData</span>(),</span><br><span class="line">               data;</span><br><span class="line">           fm.<span class="title function_">append</span>(<span class="string">&#x27;file&#x27;</span>, file)</span><br><span class="line">           fm.<span class="title function_">append</span>(<span class="string">&#x27;filename&#x27;</span>, file.<span class="property">name</span>)</span><br><span class="line">           data = <span class="keyword">await</span> instance.<span class="title function_">post</span>(<span class="string">&#x27;/upload_single&#x27;</span>, fm);</span><br><span class="line">           <span class="keyword">if</span> (+data.<span class="property">code</span> === <span class="number">0</span>) &#123;</span><br><span class="line">               <span class="title function_">alert</span>(<span class="string">&#x27;上传成功&#x27;</span>)</span><br><span class="line">               <span class="keyword">return</span></span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">throw</span> data.<span class="property">codeText</span></span><br><span class="line">       &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">           <span class="title function_">alert</span>(<span class="string">&#x27;文件上传失败&#x27;</span>)</span><br><span class="line">       &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">           upload_mark.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;none&#x27;</span></span><br><span class="line">           isRun = <span class="literal">false</span></span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="大文件分片上传与断点重传"><a href="#大文件分片上传与断点重传" class="headerlink" title="大文件分片上传与断点重传"></a>大文件分片上传与断点重传</h2><p>在同一个请求中，要上传大量的数据，导致整个过程会比较漫长，且失败后需要重头开始上传。</p>
+<p>大文件上传我们需要考虑三个方面：</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>切片：拆分上传请求</strong></li>
+<li><input disabled="" type="checkbox"> <strong>断点续传</strong></li>
+<li><input disabled="" type="checkbox"> <strong>显示上传进度和暂停上传</strong></li>
+</ul>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/image_JsBQ7ohaAg.png"></p>
+<h3 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h3><p><strong>识别切片来源****保证切片拼接顺序</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> 我们一般采用编码的方式进行上传，获取文件对应的二进制内容。</li>
+<li><input disabled="" type="checkbox"> 计算出内容的总大小，根据文件大小切成对应的分片。</li>
+<li><input disabled="" type="checkbox"> 上传时标识出当前文件，告诉后端上传到了第几个(可以用时间戳形式)。<ul>
+<li><input disabled="" type="checkbox"> 不加表示的话，后端在追加切片时，无法识别切片顺序</li>
+<li><input disabled="" type="checkbox"> 接口异常的情况下无法正确拼接</li>
+</ul>
+</li>
+</ul>
+<p><strong>实现</strong><br>根据文件名、文件长度等基本信息进行拼接<br>根据文件的二进制内容计算文件的hash，这样只要文件内容不一样，则标识也会不一样，缺点在于计算量比较大.<br>将文件拆分成piece大小的分块，然后每次请求只需要上传这一个部分的分块即可</p>
+<h3 id="断点续传"><a href="#断点续传" class="headerlink" title="断点续传"></a>断点续传</h3><p>我们在上传或者下载文件的时候，如果已经进行了一部分，这时候网络故障、页面关闭的情况下，不需要从头开始操作，而是从指定位置继续进行操作，这种处理方式就是所说的“断点续传”</p>
+<p><strong>断点：</strong> 的由来是在下载过程中，将一个下载文件分成了多个部分，同时进行多个部分一起的下载，当某个时间点，任务被暂停了，此时下载暂停的位置就是断点了。<strong>续传</strong>：一个任务从暂停到开始时，会从上一次任务暂停处开始(可以每次传输成功后加一个表示为告诉前端传输进度)。</p>
+<p>实现思路：</p>
+<ul>
+<li><input disabled="" type="checkbox"> 保存已上传的切片信息</li>
+<li><input disabled="" type="checkbox"> 选择未上传的切片进行上传</li>
+<li><input disabled="" type="checkbox"> 全部上传成功后后端进行文件合并</li>
+</ul>
+<p>实现方案：</p>
+<ol>
+<li><input disabled="" type="checkbox"> 本地存储：我们可以利用localstorage，cookie等方式存储在浏览器内，这种情况下我们不依赖于后端，直接本地读取就行。清理了本地文件，会导致上传记录丢失。</li>
+<li><input disabled="" type="checkbox"> 服务器知道我们已经传输到了哪些切片，我们通过接口去传输未上传的切片即可</li>
+</ol>
+<p>这里采用第二种方法实现</p>
+<h3 id="上传进度"><a href="#上传进度" class="headerlink" title="上传进度"></a>上传进度</h3><p>与前面提到的方法相同</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">changeBuffer</span> = file =&gt; &#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">           <span class="keyword">let</span> fileReader = <span class="keyword">new</span> <span class="title class_">FileReader</span>()</span><br><span class="line">           fileReader.<span class="title function_">readAsArrayBuffer</span>(file)</span><br><span class="line">           fileReader.<span class="property">onload</span> = <span class="function"><span class="params">ev</span> =&gt;</span> &#123;</span><br><span class="line">               <span class="keyword">let</span> buffer = ev.<span class="property">target</span>.<span class="property">result</span>,</span><br><span class="line">                   spark = <span class="keyword">new</span> <span class="title class_">SparkMD5</span>.<span class="title class_">ArrayBuffer</span>(),</span><br><span class="line">                   <span class="variable constant_">HASH</span>;</span><br><span class="line">               spark.<span class="title function_">append</span>(buffer)</span><br><span class="line">               <span class="variable constant_">HASH</span> = spark.<span class="title function_">end</span>()</span><br><span class="line">               suffix = <span class="regexp">/\.([a-zA-Z0-9]+)$/</span>.<span class="title function_">exec</span>(_file.<span class="property">name</span>)[<span class="number">1</span>]</span><br><span class="line">               <span class="variable language_">console</span>.<span class="title function_">log</span>(buffer)</span><br><span class="line">               <span class="variable language_">console</span>.<span class="title function_">log</span>(spark)</span><br><span class="line">               <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable constant_">HASH</span>)</span><br><span class="line">               <span class="title function_">resolve</span>(&#123; buffer, <span class="variable constant_">HASH</span>, suffix, <span class="attr">filename</span>: <span class="string">`<span class="subst">$&#123;HASH&#125;</span>.<span class="subst">$&#123;suffix&#125;</span>`</span> &#125;)</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;)</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">upload_inp.<span class="title function_">addEventListener</span>(<span class="string">&#x27;change&#x27;</span>, <span class="keyword">async</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">     _file = upload_inp.<span class="property">files</span>[<span class="number">0</span>]</span><br><span class="line">     <span class="keyword">if</span> (!_file) <span class="keyword">return</span>;</span><br><span class="line">     <span class="title function_">handleDisable</span>(<span class="literal">true</span>)</span><br><span class="line">     upload_button_select.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;loading&#x27;</span>)</span><br><span class="line">     upload_progress.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;block&#x27;</span></span><br><span class="line">     <span class="keyword">let</span> already = [], data = <span class="literal">null</span>,</span><br><span class="line">         &#123;</span><br><span class="line">             <span class="variable constant_">HASH</span>, suffix</span><br><span class="line">         &#125; = <span class="keyword">await</span> <span class="title function_">changeBuffer</span>(_file)</span><br><span class="line">     <span class="comment">//获取已经上传的切片信息</span></span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         data = <span class="keyword">await</span> instance.<span class="title function_">get</span>(<span class="string">&#x27;/upload_already&#x27;</span>, &#123;</span><br><span class="line">             <span class="attr">params</span>: &#123;</span><br><span class="line">                 <span class="variable constant_">HASH</span></span><br><span class="line">             &#125;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">if</span> (+data.<span class="property">code</span> === <span class="number">0</span>) &#123;</span><br><span class="line">             already = data.<span class="property">fileList</span></span><br><span class="line">         &#125;</span><br><span class="line">     &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line"></span><br><span class="line">     &#125;</span><br><span class="line">     <span class="comment">//实现文件切片处理【固定数量&amp;&amp;固定大小】</span></span><br><span class="line">     <span class="keyword">let</span> maxSize = <span class="number">1024</span> * <span class="number">100</span>,</span><br><span class="line">         index = <span class="number">0</span>,</span><br><span class="line">         chunks = [],</span><br><span class="line">         count = _file.<span class="property">size</span> / maxSize;</span><br><span class="line">     <span class="keyword">if</span> (count &gt; <span class="number">100</span>) &#123;</span><br><span class="line">         max = _file.<span class="property">size</span> / <span class="number">100</span>;</span><br><span class="line">         count = <span class="number">100</span></span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">while</span> (index &lt; count) &#123;</span><br><span class="line">         chunks.<span class="title function_">push</span>(&#123;</span><br><span class="line">             <span class="attr">file</span>: _file.<span class="title function_">slice</span>(index * max, (index + <span class="number">1</span>) * max),</span><br><span class="line">             <span class="attr">filename</span>: <span class="string">`<span class="subst">$&#123;HASH&#125;</span>_<span class="subst">$&#123;index + <span class="number">1</span>&#125;</span>.<span class="subst">$&#123;suffix&#125;</span>`</span></span><br><span class="line">         &#125;)</span><br><span class="line">         index++</span><br><span class="line">     &#125;</span><br><span class="line">     index = <span class="number">0</span>;</span><br><span class="line">     <span class="comment">//上传成功的处理</span></span><br><span class="line">     <span class="keyword">const</span> <span class="title function_">clear</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">         upload_button_select.<span class="property">classList</span>.<span class="title function_">remove</span>(<span class="string">&#x27;loading&#x27;</span>)</span><br><span class="line">         upload_progress.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;none&#x27;</span></span><br><span class="line">         upload_progress_value.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;0%&#x27;</span></span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">const</span> <span class="title function_">complete</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">         <span class="comment">//管控进度条</span></span><br><span class="line">         index++;</span><br><span class="line">         upload_progress_value.<span class="property">style</span>.<span class="property">width</span> = <span class="string">`<span class="subst">$&#123;index / count * <span class="number">100</span>&#125;</span>%`</span></span><br><span class="line">         <span class="keyword">if</span> (index &lt; count) <span class="keyword">return</span>;</span><br><span class="line">         upload_progress_value.<span class="property">style</span>.<span class="property">width</span> = <span class="string">`100%`</span></span><br><span class="line">         <span class="comment">//当所有切片都上传成功，合并切片</span></span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">             data = <span class="keyword">await</span> instance.<span class="title function_">post</span>(<span class="string">&#x27;/upload_merge&#x27;</span>, &#123;</span><br><span class="line">                 <span class="variable constant_">HASH</span>, count</span><br><span class="line">             &#125;, &#123;</span><br><span class="line">                 <span class="attr">headers</span>: &#123;</span><br><span class="line">                     <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/x-www-form-urlencoded&#x27;</span></span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;);</span><br><span class="line">             <span class="keyword">if</span> (+data.<span class="property">code</span> === <span class="number">0</span>) &#123;</span><br><span class="line">                 <span class="title function_">alert</span>(<span class="string">&#x27;文件上传成功&#x27;</span>)</span><br><span class="line">                 <span class="title function_">clear</span>()</span><br><span class="line">                 <span class="keyword">return</span>;</span><br><span class="line">             &#125;</span><br><span class="line">             <span class="keyword">throw</span> data.<span class="property">codeText</span></span><br><span class="line">         &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">             <span class="title function_">alert</span>(<span class="string">&#x27;切片合并失败&#x27;</span>)</span><br><span class="line">             <span class="title function_">clear</span>();</span><br><span class="line">         &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">             <span class="title function_">handleDisable</span>(<span class="literal">false</span>)</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="comment">//上传切片</span></span><br><span class="line">     chunks.<span class="title function_">forEach</span>(<span class="function"><span class="params">chunk</span> =&gt;</span> &#123;</span><br><span class="line">         <span class="comment">//已经上传的无需再上传</span></span><br><span class="line">         <span class="keyword">if</span> (already.<span class="property">length</span> &gt; <span class="number">0</span> &amp;&amp; already.<span class="title function_">includes</span>(chunk.<span class="property">filename</span>)) &#123;</span><br><span class="line">             <span class="title function_">complete</span>()</span><br><span class="line">             <span class="keyword">return</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">let</span> fm = <span class="keyword">new</span> <span class="title class_">FormData</span>;</span><br><span class="line">         fm.<span class="title function_">append</span>(<span class="string">&#x27;file&#x27;</span>, chunk.<span class="property">file</span>)</span><br><span class="line">         fm.<span class="title function_">append</span>(<span class="string">&#x27;filename&#x27;</span>, chunk.<span class="property">filename</span>)</span><br><span class="line">         instance.<span class="title function_">post</span>(<span class="string">&#x27;/upload_chunk&#x27;</span>, fm).<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">             <span class="keyword">if</span> (+data.<span class="property">code</span> === <span class="number">0</span>) &#123;</span><br><span class="line">                 <span class="title function_">complete</span>()</span><br><span class="line">                 <span class="keyword">return</span></span><br><span class="line">             &#125;</span><br><span class="line">             <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">reject</span>(data.<span class="property">codeText</span>)</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         ).<span class="title function_">catch</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">             <span class="title function_">alert</span>(<span class="string">&#x27;有切片上传失败&#x27;</span>)</span><br><span class="line">             <span class="title function_">clear</span>()</span><br><span class="line">         &#125;)</span><br><span class="line">     &#125;)</span><br><span class="line">     <span class="comment">//使用file原型链上的slice方法</span></span><br><span class="line">     <span class="variable language_">console</span>.<span class="title function_">log</span>(_file)</span><br><span class="line"> &#125;)</span><br></pre></td></tr></table></figure>
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>License</span></div>
+      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+    <section id="share">
+      <div class="header"><span>Share</span></div>
+      <div class="body">
+        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://yyyutang.github.io/2024/03/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84n%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84n%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" /></div>
+        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://yyyutang.github.io/2024/03/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84n%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84n%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/&title=文件上传的n种实现方式 - 小璇妙妙屋&pics=/picture/blog.jpg&summary=这篇文章按照场景的不同分别讲述了几种文件上传的实现方式以及原理。分别包括：
+
+ 通过form-data格式上传文件
+ 通过base64格式上传图片
+ 前端选择图片时需要预览，并且需要前端为文件名起一个唯一的标识符的场景
+ 前端需要实时..."><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=文件上传的n种实现方式 - 小璇妙妙屋&amp;body=https://yyyutang.github.io/2024/03/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84n%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84n%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;Copied!&quot;)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
+        
+        <div class="qrcode" id="qrcode-wechat" style="opacity:0;height:0">
+          <img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://yyyutang.github.io/2024/03/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84n%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%9A%84n%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/"/>
+        </div>
+        
+      </div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/03/19/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">单点登录的四种实现方式</a></div></section></div>
+
+
+
+
+  <div class="related-wrap md-text" id="comments">
+    <section class='header cmt-title cap theme'>
+      <p>快来参与讨论吧~</p>
+
+    </section>
+    <section class='body cmt-body beaudar'>
+      
+
+<svg class="loading" style="vertical-align:middle;fill:currentColor;overflow:hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="beaudar" repo="YYYutang/blogComments" issue-term="pathname" theme="github-light" input-position="top" comment-order="desc" loading="false" branch="main"></div>
+
+    </section>
+  </div>
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">$YuTang</a> 使用 <a href="$https://github.com/xaoxuu/hexo-theme-stellar/tree/1.27.0">$Stellar $1.27.0</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87form-data%E6%A0%BC%E5%BC%8F%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6"><span class="toc-text">通过form-data格式上传文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87base64%E6%A0%BC%E5%BC%8F%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87"><span class="toc-text">通过base64格式上传图片</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E8%A7%88%E5%9B%BE%E7%89%87%EF%BC%8C%E5%A4%84%E7%90%86%E6%96%87%E4%BB%B6%E5%90%8D"><span class="toc-text">预览图片，处理文件名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E8%BF%9B%E5%BA%A6%E6%9D%A1"><span class="toc-text">上传进度条</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-text">多文件上传</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%96%E6%8B%BD%E4%B8%8A%E4%BC%A0"><span class="toc-text">拖拽上传</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E6%96%87%E4%BB%B6%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0%E4%B8%8E%E6%96%AD%E7%82%B9%E9%87%8D%E4%BC%A0"><span class="toc-text">大文件分片上传与断点重传</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%87%E7%89%87"><span class="toc-text">切片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0"><span class="toc-text">断点续传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E8%BF%9B%E5%BA%A6"><span class="toc-text">上传进度</span></a></li></ol></li></ol></div><div class="widget-footer">
+
+<a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>Scroll to Top</span></a></div></widget>
+</div></aside><div class='float-panel blur'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+<script type="text/javascript">
+  const ctx = {
+    date_suffix: {
+      just: `Just`,
+      min: `minutes ago`,
+      hour: `hours ago`,
+      day: `days ago`,
+    },
+    root : `/`,
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+  };
+  const deps = {
+    jquery: `https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js`,
+    marked: `https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+    
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      let retryTimes = 3;
+      utils.onLoading(el);
+      function req() {
+        return new Promise((resolve, reject) => {
+          let status = 0; // 0 等待 1 完成 2 超时
+          let timer = setTimeout(() => {
+            if (status === 0) {
+              status = 2;
+              timer = null;
+              reject('请求超时');
+              if (retryTimes == 0) {
+                onFailure();
+              }
+            }
+          }, 5000);
+          fetch(url).then(function(response) {
+            if (status !== 2) {
+              clearTimeout(timer);
+              resolve(response);
+              timer = null;
+              status = 1;
+            }
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          }).then(function(data) {
+            retryTimes = 0;
+            utils.onLoadSuccess(el);
+            callback(data);
+          }).catch(function(error) {
+            if (retryTimes > 0) {
+              retryTimes -= 1;
+              setTimeout(() => {
+                req();
+              }, 5000);
+            } else {
+              utils.onLoadFailure(el);
+              onFailure();
+            }
+          });
+        });
+      }
+      req();
+    },
+  };
+</script>
+
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.27.0" async></script>
+
+<!-- optional -->
+
+  <script>
+  function loadBeaudar() {
+    const els = document.querySelectorAll("#comments #beaudar");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.error(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://beaudar.lipk.org/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadBeaudar();
+  });
+</script>
+
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script><script defer src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+</script><script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          loop: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script><script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>
