@@ -1,0 +1,652 @@
+
+<!DOCTYPE html><html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.27.0" theme-name="Stellar" theme-version="1.27.0">
+  
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>Vue原理系列之五：虚拟节点 vnode 生成真实DOM - 小璇妙妙屋</title>
+
+  
+  <meta name="description" content="首先，我们从前面的文章可以得知 Virtual DOM 渲染成真实的 DOM 实际上要经历 VNode 的定义、diff、patch 等过程。
+深入浅出虚拟 DOM 和 Diff 算法，及 Vue2 与 Vue3 中的区别 - 掘金 (juejin.cn)
+Diff 算法1. 只比较同一层级，...">
+  
+  <meta name="keywords" content="前端,Vue2">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.27.0">
+
+  
+    <link rel="shortcut icon" href="/picture/title.jpg">
+  
+
+  
+
+  
+</head>
+<body>
+
+<div class="l_body s:aa content tech" id="start" layout="post" ><aside class="l_left"><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/picture/title.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">小璇妙妙屋</div><div class="sub normal cap">冻手冻手！准备学习</div><div class="sub hover cap" style="opacity:0"> All the stars are closer</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
+
+
+<nav class="menu dis-select"><a class="nav-item" title="主页" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item active" title="博客" href="/posts/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="社交" href="/friends/" style="color:#FA6400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0" opacity=".5"/><path fill="currentColor" d="M17.712 5.453c1.047-.193 2.006-.259 2.797-.152c.77.103 1.536.393 1.956 1.064c.446.714.312 1.542-.012 2.258c-.33.728-.918 1.499-1.672 2.268c-1.516 1.547-3.836 3.226-6.597 4.697c-2.763 1.472-5.495 2.484-7.694 2.92c-1.095.217-2.098.299-2.923.201c-.8-.095-1.6-.383-2.032-1.075c-.47-.752-.296-1.63.07-2.379c.375-.768 1.032-1.586 1.872-2.403L4 12.416c0 .219.083.71.168 1.146c.045.23.09.444.123.596c-.652.666-1.098 1.263-1.339 1.756c-.277.567-.208.825-.145.925c.072.116.305.305.937.38c.609.073 1.44.018 2.455-.183c2.02-.4 4.613-1.351 7.28-2.772c2.667-1.42 4.85-3.015 6.23-4.423c.694-.707 1.15-1.334 1.377-1.836c.233-.515.167-.75.107-.844c-.07-.112-.289-.294-.883-.374c-.542-.072-1.272-.041-2.163.112L16.87 5.656c.338-.101.658-.17.842-.203"/></svg></a><a class="nav-item" title="更多" href="/more/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+
+
+<widget class="widget-wrapper user-card ghuser"><div class="widget-body ds-ghinfo" api="https://api.github.com/users/YYYutang# your github login username"><div class="avatar" ><img no-lazy type="img" id="avatar_url" src="/picture/title.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></div><p class="username" ff="title" type="text" id="name">&nbsp;</p><p class="bio" type="text" id="bio">&nbsp;</p><div class="buttons"><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=followers"><span class="title" type="text" id="followers">0</span><span class="desc">followers</span></a><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=following"><span class="title" type="text" id="following">0</span><span class="desc">following</span></a><a class="btn" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username?tab=repositories"><span class="title" type="text" id="public_repos">0</span><span class="desc">repos</span></a></div><a class="follow" target="_blank" rel="noopener" href="https://github.com/YYYutang# your github login username"><svg aria-hidden="true" role="img" class="color-icon-primary" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" style="display:inline-block;user-select:none;vertical-align:text-bottom;overflow:visible"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>Follow</a></div></widget>
+
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2024/02/13/%E6%B7%B1%E5%85%A5%E5%AF%B9%E8%B1%A1/"><span class="title">Javascript 构造函数</span></a><a class="item title" href="/2024/02/29/%E6%B7%B1%E6%B5%85%E6%8B%B7%E8%B4%9D/"><span class="title">深浅拷贝及其实现方式</span></a><a class="item title" href="/2023/06/18/%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6/"><span class="title">类式组件</span></a><a class="item title" href="/2024/01/16/%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/"><span class="title">盒子模型</span></a><a class="item title" href="/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/"><span class="title">虚拟DOM创建</span></a></div></widget>
+</div>
+
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/posts">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/Vue/">Vue</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-03-22T02:56:00.000Z">2024-03-22</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2024-03-22T02:58:32.119Z">2024-03-22</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>Vue原理系列之五：虚拟节点 vnode 生成真实DOM</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><p>首先，我们从前面的文章可以得知 <code>Virtual DOM</code> 渲染成真实的 <code>DOM</code> 实际上要经历 <code>VNode</code> 的定义、<code>diff</code>、<code>patch</code> 等过程。</p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7010594233253888013#heading-8" title="深入浅出虚拟 DOM 和 Diff 算法，及 Vue2 与 Vue3 中的区别 - 掘金 (juejin.cn)">深入浅出虚拟 DOM 和 Diff 算法，及 Vue2 与 Vue3 中的区别 - 掘金 (juejin.cn)</a></p>
+<h2 id="Diff-算法"><a href="#Diff-算法" class="headerlink" title="Diff 算法"></a>Diff 算法</h2><h3 id="1-只比较同一层级，不跨级比较"><a href="#1-只比较同一层级，不跨级比较" class="headerlink" title="1. 只比较同一层级，不跨级比较"></a><strong>1. 只比较同一层级，不跨级比较</strong></h3><p>vue中的diff算法有个特点，就是<strong>只能在同级比较，不能跨级比较。</strong> 即图中颜色相同部分进行比较。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_yoohhv9_Vz.png"></p>
+<p>举个例子:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 之前 --&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>           <span class="comment">&lt;!-- 层级1 --&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>            <span class="comment">&lt;!-- 层级2 --&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">b</span>&gt;</span> aoy <span class="tag">&lt;/<span class="name">b</span>&gt;</span>   <span class="comment">&lt;!-- 层级3 --&gt;</span>   </span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">span</span>&gt;</span>diff<span class="tag">&lt;/<span class="name">Span</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">P</span>&gt;</span> </span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line">&lt;!-- 之后 --&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>            <span class="comment">&lt;!-- 层级1 --&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>             <span class="comment">&lt;!-- 层级2 --&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">b</span>&gt;</span> aoy <span class="tag">&lt;/<span class="name">b</span>&gt;</span>        <span class="comment">&lt;!-- 层级3 --&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;<span class="name">span</span>&gt;</span>diff<span class="tag">&lt;/<span class="name">Span</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们可能期望将<code>&lt;span&gt;</code>直接移动到<code>&lt;p&gt;</code>的后边，这是最优的操作。但是实际的diff操作是移除<code>&lt;p&gt;</code>里的<code>&lt;span&gt;</code>在创建一个新的<code>&lt;span&gt;</code>插到<code>&lt;p&gt;</code>的后边。因为新加的<code>&lt;span&gt;</code>在层级2，旧的在层级3，属于不同层级的比较。vue中的diff算法可能不是最优的操作，但是在一颗虚拟DOM树比较复杂的情况下是相对比较友好的。</p>
+<h3 id="2-比较标签名"><a href="#2-比较标签名" class="headerlink" title="2. 比较标签名"></a><strong>2. 比较标签名</strong></h3><p>如果同一层级的比较标签名不同，就直接移除老的虚拟 DOM 对应的节点，不继续按这个树状结构做深度比较，这是简化比较次数的第二个方面</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_EkwFSJGa1M.png"></p>
+<h3 id="3-比较-key"><a href="#3-比较-key" class="headerlink" title="3. 比较 key"></a><strong>3. 比较 key</strong></h3><p>如果标签名相同，key 也相同，就会认为是相同节点，也不继续按这个树状结构做深度比较，比如我们写 v-for 的时候会比较 key，不写 key 就会报错，这也就是因为 Diff 算法需要比较 key</p>
+<p>面试中有一道特别常见的题，就是让你说一下 key 的作用，实际上考查的就是大家对虚拟 DOM 和 patch 细节的掌握程度，能够反应出我们面试者的理解层次，所以这里扩展一下 key</p>
+<h4 id="key-的作用"><a href="#key-的作用" class="headerlink" title="key 的作用"></a>key 的作用</h4><p>比如有一个列表，我们需要在中间插入一个元素，会发生什么变化呢？先看个图</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_XkioJUzlhx.png"></p>
+<p>如图的 <code>li1</code> 和 <code>li2</code> 不会重新渲染，这个没有争议的。而 <code>li3、li4、li5</code> 都会重新渲染</p>
+<p>因为在不使用 <code>key</code> 或者列表的 <code>index</code> 作为 <code>key</code> 的时候，每个元素对应的位置关系都是 index，上图中的结果直接导致我们插入的元素到后面的全部元素，对应的位置关系都发生了变更，所以全部都会执行更新操作，这可不是我们想要的，我们希望的是渲染添加的那一个元素，其他四个元素不做任何变更，也就不要重新渲染</p>
+<p>而在使用唯一 <code>key</code>  的情况下，每个元素对应的位置关系就是 <code>key</code>，来看一下使用唯一 <code>key</code> 值的情况下</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_MiIpiWxwE6.png"></p>
+<p>这样如图中的 <code>li3</code> 和 <code>li4</code> 就不会重新渲染，因为元素内容没发生改变，对应的位置关系也没有发生改变。</p>
+<p>这也是为什么 v-for 必须要写 key，而且不建议开发中使用数组的 index 作为 key 的原因</p>
+<p>总结一下：</p>
+<ul>
+<li><input disabled="" type="checkbox"> key 的作用主要是为了更高效的更新虚拟 DOM，因为它可以非常精确的找到相同节点，因此 patch 过程会非常高效</li>
+<li><input disabled="" type="checkbox"> Vue 在 patch 过程中会判断两个节点是不是相同节点时，key 是一个必要条件。比如渲染列表时，如果不写 key，Vue 在比较的时候，就可能会导致频繁更新元素，使整个 patch 过程比较低效，影响性能</li>
+<li><input disabled="" type="checkbox"> 应该避免使用数组下标作为 key，因为 key 值不是唯一的话可能会导致上面图中表示的 bug，使 Vue 无法区分它他，还有比如在使用相同标签元素过渡切换的时候，就会导致只替换其内部属性而不会触发过渡效果</li>
+<li><input disabled="" type="checkbox"> 从源码里可以知道，Vue 判断两个节点是否相同时主要判断两者的元素类型和 key 等，如果不设置 key，就可能永远认为这两个是相同节点，只能去做更新操作，就造成大量不必要的 DOM 更新操作，明显是不可取的</li>
+</ul>
+<h2 id="Vue源码的diff调用逻辑"><a href="#Vue源码的diff调用逻辑" class="headerlink" title="Vue源码的diff调用逻辑"></a>Vue源码的diff调用逻辑</h2><p><code>Vue.js</code> 源码实例化了一个 <code>watcher</code>，这个 ~ 被添加到了在模板当中所绑定变量的依赖当中，一旦 <code>model</code> 中的响应式的数据发生了变化，这些响应式的数据所维护的 <code>dep</code> 数组便会调用 <code>dep.notify()</code> 方法完成所有依赖遍历执行的工作，这包括视图的更新，即 <code>updateComponent</code> 方法的调用。<code>watcher</code> 和 <code>updateComponent</code>方法定义在  <code>src/core/instance/lifecycle.js</code> 文件中 。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">mountComponent</span> (</span><br><span class="line">  <span class="attr">vm</span>: <span class="title class_">Component</span>,</span><br><span class="line">  <span class="attr">el</span>: ?<span class="title class_">Element</span>,</span><br><span class="line">  hydrating?: boolean</span><br><span class="line">): <span class="title class_">Component</span> &#123;</span><br><span class="line">  vm.<span class="property">$el</span> = el</span><br><span class="line">  <span class="comment">// 省略一系列其它代码</span></span><br><span class="line">  <span class="keyword">let</span> updateComponent</span><br><span class="line">  <span class="comment">/* istanbul ignore if */</span></span><br><span class="line">  <span class="keyword">if</span> (process.<span class="property">env</span>.<span class="property">NODE_ENV</span> !== <span class="string">&#x27;production&#x27;</span> &amp;&amp; config.<span class="property">performance</span> &amp;&amp; mark) &#123;</span><br><span class="line">    updateComponent = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// 生成虚拟 vnode   </span></span><br><span class="line">      <span class="keyword">const</span> vnode = vm.<span class="title function_">_render</span>()</span><br><span class="line">      <span class="comment">// 更新 DOM</span></span><br><span class="line">      vm.<span class="title function_">_update</span>(vnode, hydrating)</span><br><span class="line">     </span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    updateComponent = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      vm.<span class="title function_">_update</span>(vm.<span class="title function_">_render</span>(), hydrating)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 实例化一个渲染Watcher，在它的回调函数中会调用 updateComponent 方法  </span></span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">Watcher</span>(vm, updateComponent, noop, &#123;</span><br><span class="line">    before () &#123;</span><br><span class="line">      <span class="keyword">if</span> (vm.<span class="property">_isMounted</span> &amp;&amp; !vm.<span class="property">_isDestroyed</span>) &#123;</span><br><span class="line">        <span class="title function_">callHook</span>(vm, <span class="string">&#x27;beforeUpdate&#x27;</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, <span class="literal">true</span> <span class="comment">/* isRenderWatcher */</span>)</span><br><span class="line">  hydrating = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> vm</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>完成视图的更新工作事实上就是调用了<code>vm._update</code>方法，这个方法接收的第一个参数是刚生成的<code>Vnode</code>，调用的<code>vm._update</code>方法定义在 <code>src/core/instance/lifecycle.js</code>中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">_update</span> = <span class="keyword">function</span> (<span class="params">vnode: VNode, hydrating?: boolean</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="attr">vm</span>: <span class="title class_">Component</span> = <span class="variable language_">this</span></span><br><span class="line">  <span class="keyword">const</span> prevEl = vm.<span class="property">$el</span></span><br><span class="line">  <span class="keyword">const</span> prevVnode = vm.<span class="property">_vnode</span></span><br><span class="line">  <span class="keyword">const</span> restoreActiveInstance = <span class="title function_">setActiveInstance</span>(vm)</span><br><span class="line">  vm.<span class="property">_vnode</span> = vnode</span><br><span class="line">  <span class="keyword">if</span> (!prevVnode) &#123;</span><br><span class="line">    <span class="comment">// 第一个参数为真实的node节点，则为初始化</span></span><br><span class="line">    vm.<span class="property">$el</span> = vm.<span class="title function_">__patch__</span>(vm.<span class="property">$el</span>, vnode, hydrating, <span class="literal">false</span> <span class="comment">/* removeOnly */</span>)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 如果需要diff的prevVnode存在，那么对prevVnode和vnode进行diff</span></span><br><span class="line">    vm.<span class="property">$el</span> = vm.<span class="title function_">__patch__</span>(prevVnode, vnode)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">restoreActiveInstance</span>()</span><br><span class="line">  <span class="comment">// update __vue__ reference</span></span><br><span class="line">  <span class="keyword">if</span> (prevEl) &#123;</span><br><span class="line">    prevEl.<span class="property">__vue__</span> = <span class="literal">null</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (vm.<span class="property">$el</span>) &#123;</span><br><span class="line">    vm.<span class="property">$el</span>.<span class="property">__vue__</span> = vm</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// if parent is an HOC, update its $el as well</span></span><br><span class="line">  <span class="keyword">if</span> (vm.<span class="property">$vnode</span> &amp;&amp; vm.<span class="property">$parent</span> &amp;&amp; vm.<span class="property">$vnode</span> === vm.<span class="property">$parent</span>.<span class="property">_vnode</span>) &#123;</span><br><span class="line">    vm.<span class="property">$parent</span>.<span class="property">$el</span> = vm.<span class="property">$el</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在这个方法当中最为关键的就是 vm.__<strong>patch</strong>__ 方法，这也是整个 virtual-dom 当中最为核心的方法，主要完成了prevVnode 和 vnode 的 diff 过程并根据需要操作的 vdom 节点打 patch，最后生成新的真实 dom 节点并完成视图的更新工作。</p>
+<h2 id="patch"><a href="#patch" class="headerlink" title="patch"></a>patch</h2><p>先来介绍几个有用的api</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>invokeDestroyHook</code>: 用来删除dom节点</li>
+<li><input disabled="" type="checkbox"> <code>createElm</code>:用来创建一个节点</li>
+<li><input disabled="" type="checkbox"> <code>patchVnode</code>: patch的核心方法，主要对比就发生在这个方法中。</li>
+<li><input disabled="" type="checkbox"> <code>invokeInsertHook</code>: 用来插入节点。</li>
+<li><input disabled="" type="checkbox"> <code>removeVnodes</code>: 用来移除旧节点。</li>
+<li><input disabled="" type="checkbox"> <code>sameVnode</code>: 比较两个node的tag、isComment、inputType是否相同以及是否都有data属性。</li>
+</ul>
+<p>patch的方式主要分为4步</p>
+<ul>
+<li><input disabled="" type="checkbox"> 如果<code>oldVnode</code>存在,<code>vnode</code>不存在,则是要做<strong>删除<code>oldVnode</code>节点</strong>的操作。</li>
+<li><input disabled="" type="checkbox"> 如果<code>oldVnode</code>不存在,<code>vnode</code>存在,则是要做<strong>创建<code>vnode</code>节点</strong>的操作。</li>
+<li><input disabled="" type="checkbox"> 如果<code>oldVnode、vnode</code>都存在，且标签名相同、inputType属性(若有)相同且都存在data，则执行<code>patchVnode</code>方法。</li>
+<li><input disabled="" type="checkbox"> 如果<code>oldVnode、vnode</code>都存在，但是不满足第三步条件，则**删除<code>oldVnode</code><strong><strong>节点,创建</strong></strong><code>vnode</code>**<strong>节点</strong></li>
+</ul>
+<h3 id="patchVnode"><a href="#patchVnode" class="headerlink" title="patchVnode"></a>patchVnode</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">patchVnode</span> (</span><br><span class="line">    oldVnode,</span><br><span class="line">    vnode,</span><br><span class="line">    insertedVnodeQueue,</span><br><span class="line">    ownerArray,</span><br><span class="line">    index,</span><br><span class="line">    removeOnly</span><br><span class="line">  ) &#123;</span><br><span class="line">    <span class="comment">// 完全相同，则什么都不做</span></span><br><span class="line">    <span class="keyword">if</span> (oldVnode === vnode) &#123;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> elm = vnode.<span class="property">elm</span> = oldVnode.<span class="property">elm</span></span><br><span class="line">    <span class="comment">// 都是静态节点且key相同,且当vnode是克隆节点或是v-once指令控制的节点</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isTrue</span>(vnode.<span class="property">isStatic</span>) &amp;&amp;</span><br><span class="line">      <span class="title function_">isTrue</span>(oldVnode.<span class="property">isStatic</span>) &amp;&amp;</span><br><span class="line">      vnode.<span class="property">key</span> === oldVnode.<span class="property">key</span> &amp;&amp;</span><br><span class="line">      (<span class="title function_">isTrue</span>(vnode.<span class="property">isCloned</span>) || <span class="title function_">isTrue</span>(vnode.<span class="property">isOnce</span>))</span><br><span class="line">    ) &#123;</span><br><span class="line">      vnode.<span class="property">componentInstance</span> = oldVnode.<span class="property">componentInstance</span></span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> oldCh = oldVnode.<span class="property">children</span></span><br><span class="line">    <span class="keyword">const</span> ch = vnode.<span class="property">children</span></span><br><span class="line">    <span class="comment">// 不都是文本节点</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isUndef</span>(vnode.<span class="property">text</span>)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="title function_">isDef</span>(oldCh) &amp;&amp; <span class="title function_">isDef</span>(ch)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (oldCh !== ch) <span class="title function_">updateChildren</span>(elm, oldCh, ch, insertedVnodeQueue, removeOnly)</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">isDef</span>(ch)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">isDef</span>(oldVnode.<span class="property">text</span>)) nodeOps.<span class="title function_">setTextContent</span>(elm, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">        <span class="title function_">addVnodes</span>(elm, <span class="literal">null</span>, ch, <span class="number">0</span>, ch.<span class="property">length</span> - <span class="number">1</span>, insertedVnodeQueue)</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">isDef</span>(oldCh)) &#123;</span><br><span class="line">        <span class="title function_">removeVnodes</span>(oldCh, <span class="number">0</span>, oldCh.<span class="property">length</span> - <span class="number">1</span>)</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">isDef</span>(oldVnode.<span class="property">text</span>)) &#123;</span><br><span class="line">        nodeOps.<span class="title function_">setTextContent</span>(elm, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (oldVnode.<span class="property">text</span> !== vnode.<span class="property">text</span>) &#123;  <span class="comment">// 都是文本节点</span></span><br><span class="line">      nodeOps.<span class="title function_">setTextContent</span>(elm, vnode.<span class="property">text</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>patchVnode方法主要分为以下步骤：</p>
+<ul>
+<li><input disabled="" type="checkbox"> 若<code>vnode</code>和<code>oldVnode</code>完全相同，则不需要做任何事情</li>
+<li><input disabled="" type="checkbox"> 若<code>vnode</code>和<code>oldVnode</code>都是静态节点，且具有相同的<code>key</code>,则当<code>vnode</code>是克隆节点或是<code>v-once</code>指令控制的节点时，只需要把<code>oldVnode.elm</code>和<code>oldVnode.child</code>都复制到<code>vnode</code>上，也不用再有其他操作。</li>
+<li><input disabled="" type="checkbox"> 若<code>vnode</code>和<code>oldVnode</code>不是文本节点或注释节点时<ol>
+<li><input disabled="" type="checkbox"> 如果<code>oldVnode</code>和<code>vnode</code>都有子节点，且2方的子节点不完全一致，就执行更新子节点的操作（这一部分其实是在<code>updateChildren</code>函数中实现）。</li>
+<li><input disabled="" type="checkbox"> 如果只有<code>oldVnode</code>有子节点，那就把这些节点都删除</li>
+<li><input disabled="" type="checkbox"> 如果只有<code>vnode</code>有子节点，那就创建这些子节点</li>
+<li><input disabled="" type="checkbox"> 如果<code>oldVnode</code>和<code>vnode</code>都没有子节点，但是<code>oldVnode</code>是文本节点或注释节点，就把<code>vnode.elm</code>的文本设置为空字符串</li>
+</ol>
+</li>
+<li><input disabled="" type="checkbox"> 如果<code>vnode</code>是文本节点或注释节点，但是<code>vnode.text != oldVnode.text</code>时，只需要更新<code>vnode.elm</code>的文本内容就可以.</li>
+</ul>
+<h3 id="updateChildren"><a href="#updateChildren" class="headerlink" title="updateChildren"></a>updateChildren</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* parentElm:父级元素节点</span></span><br><span class="line"><span class="comment">* oldCh: oldVnode的children</span></span><br><span class="line"><span class="comment">* newCh: vnode的children</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">updateChildren</span> (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) &#123;</span><br><span class="line">  <span class="comment">// 定义4个索引</span></span><br><span class="line">  <span class="keyword">let</span> oldStartIdx = <span class="number">0</span>  <span class="comment">// 旧头</span></span><br><span class="line">  <span class="keyword">let</span> newStartIdx = <span class="number">0</span>  <span class="comment">// 新头</span></span><br><span class="line">  <span class="keyword">let</span> oldEndIdx = oldCh.<span class="property">length</span> - <span class="number">1</span> <span class="comment">// 旧尾</span></span><br><span class="line">  <span class="keyword">let</span> oldStartVnode = oldCh[<span class="number">0</span>]  <span class="comment">// oldStartIdx对应的node</span></span><br><span class="line">  <span class="keyword">let</span> oldEndVnode = oldCh[oldEndIdx] <span class="comment">// oldEndIdx对应的node</span></span><br><span class="line">  <span class="keyword">let</span> newEndIdx = newCh.<span class="property">length</span> - <span class="number">1</span>  <span class="comment">// 新尾</span></span><br><span class="line">  <span class="keyword">let</span> newStartVnode = newCh[<span class="number">0</span>] <span class="comment">// newStartIdx对应的node</span></span><br><span class="line">  <span class="keyword">let</span> newEndVnode = newCh[newEndIdx] <span class="comment">// newEndIdx对应的node</span></span><br><span class="line">  <span class="keyword">let</span> oldKeyToIdx, idxInOld, vnodeToMove, refElm</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">  <span class="comment">// 当vnode和oldVnode在下标之间有node存在时</span></span><br><span class="line">  <span class="keyword">while</span> (oldStartIdx &lt;= oldEndIdx &amp;&amp; newStartIdx &lt;= newEndIdx) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isUndef</span>(oldStartVnode)) &#123;</span><br><span class="line">      oldStartVnode = oldCh[++oldStartIdx] <span class="comment">// Vnode has been moved left</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">isUndef</span>(oldEndVnode)) &#123;</span><br><span class="line">      oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(oldStartVnode, newStartVnode)) &#123;</span><br><span class="line">      <span class="title function_">patchVnode</span>(oldStartVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">      oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">      newStartVnode = newCh[++newStartIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(oldEndVnode, newEndVnode)) &#123;</span><br><span class="line">      <span class="title function_">patchVnode</span>(oldEndVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)</span><br><span class="line">      oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">      newEndVnode = newCh[--newEndIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(oldStartVnode, newEndVnode)) &#123; <span class="comment">// Vnode moved right</span></span><br><span class="line">      <span class="title function_">patchVnode</span>(oldStartVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)</span><br><span class="line">      canMove &amp;&amp; nodeOps.<span class="title function_">insertBefore</span>(parentElm, oldStartVnode.<span class="property">elm</span>, nodeOps.<span class="title function_">nextSibling</span>(oldEndVnode.<span class="property">elm</span>))</span><br><span class="line">      oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">      newEndVnode = newCh[--newEndIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(oldEndVnode, newStartVnode)) &#123; <span class="comment">// Vnode moved left</span></span><br><span class="line">      <span class="title function_">patchVnode</span>(oldEndVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">      canMove &amp;&amp; nodeOps.<span class="title function_">insertBefore</span>(parentElm, oldEndVnode.<span class="property">elm</span>, oldStartVnode.<span class="property">elm</span>)</span><br><span class="line">      oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">      newStartVnode = newCh[++newStartIdx]</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="title function_">isUndef</span>(oldKeyToIdx)) oldKeyToIdx = <span class="title function_">createKeyToOldIdx</span>(oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line">      idxInOld = <span class="title function_">isDef</span>(newStartVnode.<span class="property">key</span>)</span><br><span class="line">        ? oldKeyToIdx[newStartVnode.<span class="property">key</span>]</span><br><span class="line">        : <span class="title function_">findIdxInOld</span>(newStartVnode, oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line">      <span class="keyword">if</span> (<span class="title function_">isUndef</span>(idxInOld)) &#123; <span class="comment">// New element</span></span><br><span class="line">        <span class="title function_">createElm</span>(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.<span class="property">elm</span>, <span class="literal">false</span>, newCh, newStartIdx)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        vnodeToMove = oldCh[idxInOld]</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(vnodeToMove, newStartVnode)) &#123;</span><br><span class="line">          <span class="title function_">patchVnode</span>(vnodeToMove, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">          oldCh[idxInOld] = <span class="literal">undefined</span></span><br><span class="line">          canMove &amp;&amp; nodeOps.<span class="title function_">insertBefore</span>(parentElm, vnodeToMove.<span class="property">elm</span>, oldStartVnode.<span class="property">elm</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">// same key but different element. treat as new element</span></span><br><span class="line">          <span class="title function_">createElm</span>(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.<span class="property">elm</span>, <span class="literal">false</span>, newCh, newStartIdx)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      newStartVnode = newCh[++newStartIdx]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (oldStartIdx &gt; oldEndIdx) &#123;</span><br><span class="line">    refElm = <span class="title function_">isUndef</span>(newCh[newEndIdx + <span class="number">1</span>]) ? <span class="literal">null</span> : newCh[newEndIdx + <span class="number">1</span>].<span class="property">elm</span></span><br><span class="line">    <span class="title function_">addVnodes</span>(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue)</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newStartIdx &gt; newEndIdx) &#123;</span><br><span class="line">    <span class="title function_">removeVnodes</span>(oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>首先我们定义 oldStartIdx、newStartIdx、oldEndIdx 以及 newEndIdx 分别是新老两个 VNode 的两边的索引，同时oldStartVnode、newStartVnode、oldEndVnode 以及 newEndVnode 分别指向这几个索引对应的 VNode 节点。</p>
+<p>举个例子</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_S9DNivmLqQ.png"></p>
+<p>假设现在oldch、newCh分别如上图所示。那么接下来就要执行</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (oldStartIdx &lt;= oldEndIdx &amp;&amp; newStartIdx &lt;= newEndIdx)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在这个循环中，<code>oldStartIdx、oldEndIdx</code>和<code>newStartIdx、newEndIdx</code>分别<strong>从两边向中间移动，直到有其中一个存在交叉部分(startIdx&gt;&#x3D;endIdx)</strong></p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_CRjnUH8iE3.png"></p>
+<p>首先当 <code>oldStartVnode</code> 或者 <code>oldEndVnode</code> 不存在的时候，<code>oldStartIdx</code> 与 <code>oldEndIdx</code> 继续向中间靠拢，并更新对应的 <code>oldStartVnode</code> 与 <code>oldEndVnode</code> 的指向,这里需要<strong>注意就是伴随着Idx移动，其对应的指向node也发生变化</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="title function_">isUndef</span>(oldStartVnode)) &#123;</span><br><span class="line">    oldStartVnode = oldCh[++oldStartIdx] <span class="comment">// Vnode has been moved left</span></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">isUndef</span>(oldEndVnode)) &#123;</span><br><span class="line">    oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">&#125; </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>接下来就是新旧vnode的首首、首尾、尾尾、尾首对比的过程，即<code>oldStartVnode、newStartVnode</code>和<code>oldEndVnode、newEndVnode</code>两两之间执行<code>patchVnode</code>，同时<code>Idx</code>向中间移动</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(oldStartVnode, newStartVnode)) &#123; <span class="comment">// </span></span><br><span class="line">    <span class="title function_">patchVnode</span>(oldStartVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">    oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">    newStartVnode = newCh[++newStartIdx]</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(oldEndVnode, newEndVnode)) &#123;</span><br><span class="line">    <span class="title function_">patchVnode</span>(oldEndVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)</span><br><span class="line">    oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">    newEndVnode = newCh[--newEndIdx]</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(oldStartVnode, newEndVnode)) &#123; <span class="comment">// Vnode moved right</span></span><br><span class="line">    <span class="title function_">patchVnode</span>(oldStartVnode, newEndVnode, insertedVnodeQueue, newCh, newEndIdx)</span><br><span class="line">    canMove &amp;&amp; nodeOps.<span class="title function_">insertBefore</span>(parentElm, oldStartVnode.<span class="property">elm</span>, nodeOps.<span class="title function_">nextSibling</span>(oldEndVnode.<span class="property">elm</span>))</span><br><span class="line">    oldStartVnode = oldCh[++oldStartIdx]</span><br><span class="line">    newEndVnode = newCh[--newEndIdx]</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(oldEndVnode, newStartVnode)) &#123; <span class="comment">// Vnode moved left</span></span><br><span class="line">    <span class="title function_">patchVnode</span>(oldEndVnode, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">    canMove &amp;&amp; nodeOps.<span class="title function_">insertBefore</span>(parentElm, oldEndVnode.<span class="property">elm</span>, oldStartVnode.<span class="property">elm</span>)</span><br><span class="line">    oldEndVnode = oldCh[--oldEndIdx]</span><br><span class="line">    newStartVnode = newCh[++newStartIdx]</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>ok,接下来我们来分别分析</p>
+<ul>
+<li><input disabled="" type="checkbox"> 首先如果<code>oldStartVnode、newStartVnode</code>符合 <code>sameVnode</code> 时，说明<code>oldVnode</code> 节点的头部与 <code>vNode</code> 节点的头部是相同的<code>VNode</code>节点，直接进行 <code>patchVnode</code>，同时 <code>oldStartIdx</code> 与 <code>newStartIdx</code> 向后移动一位。</li>
+<li><input disabled="" type="checkbox"> <code>oldEndVnode、newEndVnode</code>同理，若两者符合 <code>sameVnode</code>，直接进行 <code>patchVnode</code>，同时 <code>oldEndIdx</code> 与 <code>newEndIdx</code> 向前移动一位。</li>
+</ul>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_hOQe2ysTpb.png"></p>
+<ul>
+<li><input disabled="" type="checkbox"> 接下来比较<code>oldStartVnode、newEndVnode</code>,若两者符合 <code>sameVnode</code>，也就是老 <code>oldVnode</code> 节点的头部与新 <code>vNode</code> 节点的尾部是同一节点的时候，将 <code>oldStartVnode.elm</code> 这个节点直接移动到 <code>oldEndVnode.elm</code> 这个节点的后面即可。然后 <code>oldStartIdx</code> 向后移动一位，<code>newEndIdx</code> 向前移动一位。</li>
+</ul>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_iEj113L7rh.png"></p>
+<ul>
+<li><input disabled="" type="checkbox"> 同理，<code>oldEndVnode</code> 与 <code>newStartVnode</code> 符合 <code>sameVnode</code> 时，也就是老 <code>oldVnode</code> 节点的尾部与新 <code>vNode</code> 节点的头部是同一节点的时候，将 <code>oldEndVnode.elm</code> 插入到 <code>oldStartVnode.elm</code> 前面。同样的，<code>oldEndIdx</code> 向前移动一位，<code>newStartIdx</code> 向后移动一位。</li>
+</ul>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_UxKr62qeWa.png"></p>
+<ul>
+<li><input disabled="" type="checkbox"> 如果以上四种情况都没有命中，就不断拿新的开始节点的 key 去老的 children 里找</li>
+</ul>
+<ol>
+<li><p><input disabled="" type="checkbox"> 
+如果没找到，就创建一个新的节点</p>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+如果找到了，再对比标签是不是同一个节点</p>
+<p>如果是同一个节点，就调用 patchVnode 进行后续对比，然后把这个节点插入到老的开始前面，并且移动新的开始下标，继续下一轮循环对比</p>
+<p>如果不是相同节点，就创建一个新的节点&#x20;</p>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+如果老的 vnode 先遍历完，就添加新的 vnode 没有遍历的节点</p>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+如果新的 vnode 先遍历完，就删除老的 vnode 没有遍历的节点</p>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">isUndef</span>(oldKeyToIdx)) oldKeyToIdx = <span class="title function_">createKeyToOldIdx</span>(oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line">        idxInOld = <span class="title function_">isDef</span>(newStartVnode.<span class="property">key</span>)</span><br><span class="line">          ? oldKeyToIdx[newStartVnode.<span class="property">key</span>]</span><br><span class="line">          : <span class="title function_">findIdxInOld</span>(newStartVnode, oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">isUndef</span>(idxInOld)) &#123; <span class="comment">// New element</span></span><br><span class="line">          <span class="title function_">createElm</span>(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.<span class="property">elm</span>, <span class="literal">false</span>, newCh, newStartIdx)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          vnodeToMove = oldCh[idxInOld]</span><br><span class="line">          <span class="keyword">if</span> (<span class="title function_">sameVnode</span>(vnodeToMove, newStartVnode)) &#123;</span><br><span class="line">            <span class="title function_">patchVnode</span>(vnodeToMove, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">            oldCh[idxInOld] = <span class="literal">undefined</span></span><br><span class="line">            canMove &amp;&amp; nodeOps.<span class="title function_">insertBefore</span>(parentElm, vnodeToMove.<span class="property">elm</span>, oldStartVnode.<span class="property">elm</span>)</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// same key but different element. treat as new element</span></span><br><span class="line">            <span class="title function_">createElm</span>(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.<span class="property">elm</span>, <span class="literal">false</span>, newCh, newStartIdx)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        newStartVnode = newCh[++newStartIdx]</span><br><span class="line">      &#125;</span><br><span class="line">      </span><br><span class="line"></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">createKeyToOldIdx</span> (children, beginIdx, endIdx) &#123;</span><br><span class="line">  <span class="keyword">let</span> i, key</span><br><span class="line">  <span class="keyword">const</span> map = &#123;&#125;</span><br><span class="line">  <span class="keyword">for</span> (i = beginIdx; i &lt;= endIdx; ++i) &#123;</span><br><span class="line">    key = children[i].<span class="property">key</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isDef</span>(key)) map[key] = i</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> map</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>createKeyToOldIdx</code> 的作用是产生 <code>key</code> 与 <code>index</code> 索引对应的一个 map 表。比如说有这么一个oldChild(为举例，格式不正确)：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;<span class="attr">xx</span>: xx, <span class="attr">key</span>: <span class="string">&#x27;key0&#x27;</span>&#125;,</span><br><span class="line">    &#123;<span class="attr">xx</span>: xx, <span class="attr">key</span>: <span class="string">&#x27;key1&#x27;</span>&#125;, </span><br><span class="line">    &#123;<span class="attr">xx</span>: xx, <span class="attr">key</span>: <span class="string">&#x27;key2&#x27;</span>&#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>经过<code>createKeyToOldIdx</code>转换后就会变为</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">key0</span>: <span class="number">0</span>, </span><br><span class="line">    <span class="attr">key1</span>: <span class="number">1</span>, </span><br><span class="line">    <span class="attr">key2</span>: <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>通过这种方式，就可以在<code>oldCh</code>中快速找到与当前节点(<code>newStartVnode</code>) <code>key</code>相同的节点的<code>索引idxInOld</code>.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="title function_">isUndef</span>(oldKeyToIdx)) oldKeyToIdx = <span class="title function_">createKeyToOldIdx</span>(oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line">        idxInOld = <span class="title function_">isDef</span>(newStartVnode.<span class="property">key</span>)</span><br><span class="line">          ? oldKeyToIdx[newStartVnode.<span class="property">key</span>]</span><br><span class="line">          : <span class="title function_">findIdxInOld</span>(newStartVnode, oldCh, oldStartIdx, oldEndIdx)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><input disabled="" type="checkbox"> 如果没有找到这个<code>idxInOld</code>,则通过 createElm 创建一个新节点，并将 <code>newStartIdx</code> 向后移动一位。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="title function_">isUndef</span>(idxInOld)) &#123; <span class="comment">// 创建新节点</span></span><br><span class="line">  <span class="title function_">createElm</span>(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.<span class="property">elm</span>, <span class="literal">false</span>, newCh, newStartIdx)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><input disabled="" type="checkbox"> 如果存在这个<code>idxInOld</code>,且符合<code>sameVnode</code>,则执行<code>patchVnode</code>并将<code>oldCh[idxInOld] = undefined</code>,最后将<code>newStartIdx</code> 向后移动一位。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">vnodeToMove = oldCh[idxInOld]</span><br><span class="line"><span class="keyword">if</span> (<span class="title function_">sameVnode</span>(vnodeToMove, newStartVnode)) &#123;</span><br><span class="line">    <span class="title function_">patchVnode</span>(vnodeToMove, newStartVnode, insertedVnodeQueue, newCh, newStartIdx)</span><br><span class="line">    oldCh[idxInOld] = <span class="literal">undefined</span></span><br><span class="line">    canMove &amp;&amp; nodeOps.<span class="title function_">insertBefore</span>(parentElm, vnodeToMove.<span class="property">elm</span>, oldStartVnode.<span class="property">elm</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/image_zN18FsRp9g.png"></p>
+<ul>
+<li><input disabled="" type="checkbox"> 如果不符合 <code>sameVnode</code>，只能创建一个新节点插入到 <code>parentElm</code> 的子节点中，<code>newStartIdx</code> 往后移动一位。</li>
+</ul>
+<p>一张图总结</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/9b89cbc2280940038f5550bf9b7370aa~tplv-k3u1fbpfcp-z.webp"></p>
+<p>最后，当<code>while</code>循环执行完成,会有两种情况</p>
+<ol>
+<li><input disabled="" type="checkbox"> 如果 <code>oldStartIdx &gt; oldEndIdx</code>，说明老节点比对完了，但是新节点还有多的，需要将新节点插入到真实 DOM 中去，调用 <code>addVnodes</code> 将这些节点插入即可。</li>
+<li><input disabled="" type="checkbox"> 如果 <code>newStartIdx &gt; newEndIdx</code> 条件，说明新节点比对完了，老节点还有多，将这些无用的老节点通过 <code>removeVnodes</code> 批量删除即可。</li>
+</ol>
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>License</span></div>
+      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+    <section id="share">
+      <div class="header"><span>Share</span></div>
+      <div class="body">
+        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://yyyutang.github.io/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/" /></div>
+        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://yyyutang.github.io/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/&title=Vue原理系列之五：虚拟节点 vnode 生成真实DOM - 小璇妙妙屋&pics=/picture/vue.jpg&summary=首先，我们从前面的文章可以得知 Virtual DOM 渲染成真实的 DOM 实际上要经历 VNode 的定义、diff、patch 等过程。
+深入浅出虚拟 DOM 和 Diff 算法，及 Vue2 与 Vue3 中的区别 - 掘金 ..."><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=Vue原理系列之五：虚拟节点 vnode 生成真实DOM - 小璇妙妙屋&amp;body=https://yyyutang.github.io/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;Copied!&quot;)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
+        
+        <div class="qrcode" id="qrcode-wechat" style="opacity:0;height:0">
+          <img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://yyyutang.github.io/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/"/>
+        </div>
+        
+      </div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E5%9B%9B%EF%BC%9A%E6%B8%B2%E6%9F%93%E5%87%BD%E6%95%B0%20render()%20%E6%89%A7%E8%A1%8C%E5%90%8E%E7%94%9F%E6%88%90%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode/">Vue原理系列之四：渲染函数 render() 执行后生成虚拟节点 vnode</a></div></section></div>
+
+
+
+
+  <div class="related-wrap md-text" id="comments">
+    <section class='header cmt-title cap theme'>
+      <p>快来参与讨论吧~</p>
+
+    </section>
+    <section class='body cmt-body beaudar'>
+      
+
+<svg class="loading" style="vertical-align:middle;fill:currentColor;overflow:hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="beaudar" repo="YYYutang/blogComments" issue-term="pathname" theme="github-light" input-position="top" comment-order="desc" loading="false" branch="main"></div>
+
+    </section>
+  </div>
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">$YuTang</a> 使用 <a href="$https://github.com/xaoxuu/hexo-theme-stellar/tree/1.27.0">$Stellar $1.27.0</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Diff-%E7%AE%97%E6%B3%95"><span class="toc-text">Diff 算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%8F%AA%E6%AF%94%E8%BE%83%E5%90%8C%E4%B8%80%E5%B1%82%E7%BA%A7%EF%BC%8C%E4%B8%8D%E8%B7%A8%E7%BA%A7%E6%AF%94%E8%BE%83"><span class="toc-text">1. 只比较同一层级，不跨级比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%AF%94%E8%BE%83%E6%A0%87%E7%AD%BE%E5%90%8D"><span class="toc-text">2. 比较标签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%AF%94%E8%BE%83-key"><span class="toc-text">3. 比较 key</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#key-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">key 的作用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue%E6%BA%90%E7%A0%81%E7%9A%84diff%E8%B0%83%E7%94%A8%E9%80%BB%E8%BE%91"><span class="toc-text">Vue源码的diff调用逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#patch"><span class="toc-text">patch</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#patchVnode"><span class="toc-text">patchVnode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#updateChildren"><span class="toc-text">updateChildren</span></a></li></ol></li></ol></div><div class="widget-footer">
+
+<a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>Scroll to Top</span></a></div></widget>
+</div></aside><div class='float-panel blur'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+<script type="text/javascript">
+  const ctx = {
+    date_suffix: {
+      just: `Just`,
+      min: `minutes ago`,
+      hour: `hours ago`,
+      day: `days ago`,
+    },
+    root : `/`,
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+  };
+  const deps = {
+    jquery: `https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js`,
+    marked: `https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+    
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      let retryTimes = 3;
+      utils.onLoading(el);
+      function req() {
+        return new Promise((resolve, reject) => {
+          let status = 0; // 0 等待 1 完成 2 超时
+          let timer = setTimeout(() => {
+            if (status === 0) {
+              status = 2;
+              timer = null;
+              reject('请求超时');
+              if (retryTimes == 0) {
+                onFailure();
+              }
+            }
+          }, 5000);
+          fetch(url).then(function(response) {
+            if (status !== 2) {
+              clearTimeout(timer);
+              resolve(response);
+              timer = null;
+              status = 1;
+            }
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          }).then(function(data) {
+            retryTimes = 0;
+            utils.onLoadSuccess(el);
+            callback(data);
+          }).catch(function(error) {
+            if (retryTimes > 0) {
+              retryTimes -= 1;
+              setTimeout(() => {
+                req();
+              }, 5000);
+            } else {
+              utils.onLoadFailure(el);
+              onFailure();
+            }
+          });
+        });
+      }
+      req();
+    },
+  };
+</script>
+
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.27.0" async></script>
+
+<!-- optional -->
+
+  <script>
+  function loadBeaudar() {
+    const els = document.querySelectorAll("#comments #beaudar");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.error(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://beaudar.lipk.org/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadBeaudar();
+  });
+</script>
+
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"></script><script defer src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+</script><script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          loop: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script><script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>
