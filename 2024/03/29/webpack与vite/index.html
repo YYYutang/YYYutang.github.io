@@ -16,12 +16,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" content="#f8f8f8">
   
-  <title>虚拟DOM创建 - 小璇妙妙屋</title>
+  <title>细说webpack与vite的区别 - 小璇妙妙屋</title>
 
   
-  <meta name="description" content="1.用jsx创建虚拟DOM1234const VDOM=( /* 此处一定不要写引号，因为不是字符串 */ &lt;h1 id=&quot;title&quot;&gt;  &lt;span&gt;Hello,React&lt;/span&gt; &lt;/h1&gt;)ReactDOM.re...">
+  <meta name="description" content="周一面试的时候被问到两者之间的区别，当时答得并不是很好，今天从webpack和vite 的工作原理来分析vite与webpack的具体区别。
+Webpack首先，众所周知，Webpack 是一个基于打包器的构建工具，同一个入口文件的代码会打包成一个 Bundle 文件。Webpack 长期来的...">
   
-  <meta name="keywords" content="前端,react">
+  <meta name="keywords" content="前端,Webpack">
 
   <!-- feed -->
   
@@ -66,25 +67,74 @@
 <div class="article banner top">
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
-<span class="sep"></span><a class="cap breadcrumb" href="/posts">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/react/">react</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2023-06-18T07:45:00.000Z">2023-06-18</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2024-03-29T16:57:18.357Z">2024-03-30</time></span></div></div></div>
+<span class="sep"></span><a class="cap breadcrumb" href="/posts">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/Webpack/">Webpack</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-03-29T07:20:00.000Z">2024-03-29</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2024-03-29T16:57:18.329Z">2024-03-30</time></span></div></div></div>
     
     <div class="bottom only-title">
       
       <div class="text-area">
-        <h1 class="text title"><span>虚拟DOM创建</span></h1>
+        <h1 class="text title"><span>细说webpack与vite的区别</span></h1>
         
       </div>
     </div>
     
   </div>
-  </div><article class="md-text content"><h2 id="1-用jsx创建虚拟DOM"><a href="#1-用jsx创建虚拟DOM" class="headerlink" title="1.用jsx创建虚拟DOM"></a>1.用jsx创建虚拟DOM</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="variable constant_">VDOM</span>=(</span><br><span class="line"> <span class="comment">/* 此处一定不要写引号，因为不是字符串 */</span></span><br><span class="line"> <span class="language-xml"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">id</span>=<span class="string">&quot;title&quot;</span>&gt;</span>  <span class="tag">&lt;<span class="name">span</span>&gt;</span>Hello,React<span class="tag">&lt;/<span class="name">span</span>&gt;</span> <span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span>)</span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">render</span>(<span class="variable constant_">VDOM</span>,<span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.test&#x27;</span>))</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-用js创建虚拟DOM"><a href="#2-用js创建虚拟DOM" class="headerlink" title="2.用js创建虚拟DOM"></a>2.用js创建虚拟DOM</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.创建虚拟DOM,创建嵌套格式的dom</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">VDOM</span>=<span class="title class_">React</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;h1&#x27;</span>,&#123;<span class="attr">id</span>:<span class="string">&#x27;title&#x27;</span>&#125;,<span class="title class_">React</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;span&#x27;</span>,&#123;&#125;,<span class="string">&#x27;hello,React&#x27;</span>))</span><br><span class="line"><span class="comment">//2.渲染虚拟DOM到页面</span></span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">render</span>(<span class="variable constant_">VDOM</span>,<span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.test&#x27;</span>)).</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-虚拟DOM与真实DOM的区别"><a href="#3-虚拟DOM与真实DOM的区别" class="headerlink" title="3.虚拟DOM与真实DOM的区别"></a>3.虚拟DOM与真实DOM的区别</h2><p>1、虚拟DOM本质上就是Object类型的对象</p>
-<p>2、虚拟DOM较为轻量级，真实DOM较为重量级，因为虚拟DOM运用于React内部，无需真实DOM上的过多属性。</p>
-<p>3、虚拟DOM最终会被React转化为真实DOM。</p>
+  </div><article class="md-text content"><p>周一面试的时候被问到两者之间的区别，当时答得并不是很好，今天从webpack和vite 的工作原理来分析vite与webpack的具体区别。</p>
+<h2 id="Webpack"><a href="#Webpack" class="headerlink" title="Webpack"></a>Webpack</h2><p>首先，众所周知，Webpack 是一个基于打包器的构建工具，同一个入口文件的代码会打包成一个 Bundle 文件。Webpack 长期来的一个痛点是对于大规模应用的应用启动和热更新速度很慢。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/image/image_AUCwqQPDJT.png"></p>
+<p>当文件发生变动时，整个 JavaScript Bundle 文件会被 Webpack 重新构建，这就是为什么使用 Webpack 的大规模应用在应用启动和热更新时速度很慢的原因，从而给进行大规模 JavaScript 应用的开发者造成了很差的开发体验。</p>
+<h2 id="Vite"><a href="#Vite" class="headerlink" title="Vite"></a>Vite</h2><p>首先要了解，Vite 主要由两方面组成：</p>
+<ul>
+<li>一个开发服务器，基于 ESM 提供丰富的内建能力，比如速度快到惊人的模块热更新（HMR）；</li>
+<li>一套构建指令，使用 rollup 进行代码打包，且零配置即可输出用于生产环境的高度优化的静态代码。</li>
+</ul>
+<p>Vite 的核心能力和 <code>webpack</code> + <code>webpack-dev-server</code> 相似，但是在开发者体验上有一些提升：</p>
+<ul>
+<li>无论项目大小有多大，启动应用都只需更少的时间；</li>
+<li>无论项目大小有多大，<code>HMR（Hot Module Replacing）</code>热更新都可以做到及时响应；</li>
+<li>按需编译；</li>
+<li>零配置，开箱即用；</li>
+<li>Esbuild 能力带来的 Typescript&#x2F;jsx 的原生支持。</li>
+</ul>
+<p>Vite 的工作流程如下图所示，其实就是通过原生 ES Modules 托管源代码，本质上是让浏览器来接管部分打包器的工作。Vite 只会在浏览器请求发生时，按需将源码转成 ES Modules 格式返回给浏览器，由浏览器加载并执行 ES Modules 文件。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2fb642edba6f4d648d960110cb9112ff~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp"></p>
+<p>接下来介绍一下vite的一些特性。</p>
+<h3 id="热更新"><a href="#热更新" class="headerlink" title="热更新"></a>热更新</h3><p>在基于 Bundle 构建的构建器中，当一个文件变动时，重新构建整个 Bundle 文件是非常低效的，且随着应用规模的上升，构建速度会直线下降。</p>
+<p>传统的构建器虽然提供了热更新的能力，但是也会存在随着应用规模上升，热更新速度显著下降的问题。</p>
+<p>Vite 基于 ES Modules按需提供源码文件，当一个文件被编辑后，Vite 只会重新编译并提供该文件。因此，无论项目规模多大，Vite 的热更新都可以保持快速更新。</p>
+<p>此外，Vite 合理利用浏览器缓存来加速页面加载，源码模块请求根据 <code>304 Not Modified</code> 进行协商缓存；依赖模块请求通过 <code>Cache-Control: max-age=31536000,immutable</code> 进行强缓存，因此一旦缓存，不会再次请求。</p>
+<h3 id="生产环境仍需打包"><a href="#生产环境仍需打包" class="headerlink" title="生产环境仍需打包"></a>生产环境仍需打包</h3><p>在生产环境使用 ES Modules会存在大量额外网络请求问题，因此生产环境不太试用 ES Modules，最好的方式还是代码进行 tree-shaking、懒加载、和 chunk 分隔等。</p>
+<p>那么生产环境的构建为什么不直接使用 esbuild，而是使用 rollup 呢？这是因为 esbuild 在代码分隔、css 处理等方面的功能仍在开发中，rollup 在应用打包方面更加的成熟且灵活。</p>
+<h3 id="性能提升"><a href="#性能提升" class="headerlink" title="性能提升"></a>性能提升</h3><p>Vite 依托支持原生  ES Modules 模块的现代浏览器，极大的降低了应用的启动和重新构建时间。Vite 本质上是一个在开发环境为浏览器按需提供文件的 Web Server，这些文件包含源码模块和在第一次运行时使用 esbuild 预构建的依赖模块。</p>
+<p>Vite 和 Webpack 的主要不同在于开发环境下对于源码如何被托管以及支持哪种模块规范。</p>
+<h3 id="依赖预构建"><a href="#依赖预构建" class="headerlink" title="依赖预构建"></a>依赖预构建</h3><p>Vite 在首次启动时，会进行依赖预构建。依赖预构建有两个目的：</p>
+<ul>
+<li>CommonJs 和 UMD 的兼容性：开发阶段，Vite 的 Dev Server 将所有代码视为原生 ES 模块。因此，Vite 必须将 CommonJS 或 UMD 发布的依赖项转为 ESM。</li>
+<li>性能：Vite 将有很多内部模块的依赖视为单个模块，以提升页面加载性能。比如，<code>lodash-es</code> 拥有超过 600 个内部模块，当 <code>import &#123;debounce&#125; from &#39;lodash-es&#39;;</code> 时，浏览器会同时发起超过 600 个请求，并行请求过多将会显著影响页面加载性能。因此预构建将 <code>lodash-es</code> 视为一个模块，浏览器只需要发起一个请求。</li>
+</ul>
+<h3 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h3><h4 id="文件系统缓存"><a href="#文件系统缓存" class="headerlink" title="文件系统缓存"></a>文件系统缓存</h4><p>Vite 会将预构建的依赖缓存到 <code>node_modules/.vite</code> ，它根据几个源决定是否需要重新运行预构建步骤：</p>
+<ul>
+<li><code>package.json</code> 中的 <code>dependencies</code> 列表；</li>
+<li>包管理的 <code>lockfile</code>，例如 <code>package-lock.json</code>，<code>yarn.lock</code> 或者 <code>pnpm-lock.yaml</code></li>
+<li>可能在 <code>vite.config.js</code> 相关字段中配置过的。</li>
+</ul>
+<p>只有在上述其中一项发生更改时，才需要重新运行预构建。</p>
+<p>如果处于某些原因，你想要强制 Vite 重新构建依赖，你可以用 <code>--force</code> 命令选项启动开发服务器，或者手动删除 <code>node_modules/.vite</code> 目录。</p>
+<h4 id="浏览器缓存"><a href="#浏览器缓存" class="headerlink" title="浏览器缓存"></a>浏览器缓存</h4><p>解析后的依赖请求会以 HTTP 头 <code>max-age=31536000,immutable</code> 强缓存，以提高开发时的页面重载性能。如果你想通过本地编辑来调试依赖项，可以：</p>
+<ul>
+<li>通过浏览器调试工具的 Network 选项卡暂时禁用缓存；</li>
+<li>重启 <code>Vite Dev Server</code>，并添加 <code>--force</code> 命令以重新构建依赖；</li>
+<li>重新载入页面。</li>
+</ul>
+<h2 id="vite比webpack快的原因"><a href="#vite比webpack快的原因" class="headerlink" title="vite比webpack快的原因"></a>vite比webpack快的原因</h2><p>综上所述，开发阶段vite的速度远快于webpack，主要是因为：<br><strong>webpack是先打包再启动开发服务器，vite是直接启动开发服务器，然后按需编译依赖文件。</strong></p>
+<h5 id="下面详细来说："><a href="#下面详细来说：" class="headerlink" title="下面详细来说："></a>下面详细来说：</h5><ul>
+<li>webpack先打包，再启动开发服务器，请求服务器时直接给予打包后的结果；</li>
+<li>vite直接启动开发服务器，请求哪个模块再对哪个模块进行实时编译；</li>
+<li>由于现代浏览器本身就支持ES Modules，会主动发起请求去获取所需文件。vite充分利用这点，将开发环境下的模块文件，就作为浏览器要执行的文件，而不是像webpack先打包，交给浏览器执行的文件是打包后的；</li>
+<li>由于vite启动的时候不需要打包，也就无需分析模块依赖、编译，所以启动速度非常快。当浏览器请求需要的模块时，再对模块进行编译，这种按需动态编译的模式，极大缩短了编译时间，当项目越大，文件越多时，vite的开发时优势越明显；</li>
+<li>在HRM方面，当某个模块内容改变时，让浏览器去重新请求该模块即可，而不是像webpack重新将该模块的所有依赖重新编译；</li>
+<li>当需要打包到生产环境时，vite使用传统的rollup进行打包，所以，vite的优势是体现在开发阶段，另外，由于vite使用的是ES Module，所以代码中不可以使用CommonJs；</li>
+</ul>
 
 <div class="article-footer fs14">
     <section id="license">
@@ -96,18 +146,19 @@
     <section id="share">
       <div class="header"><span>Share</span></div>
       <div class="body">
-        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://yyyutang.github.io/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/" /></div>
-        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://yyyutang.github.io/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/&title=虚拟DOM创建 - 小璇妙妙屋&pics=/picture/react.jpg&summary=1.用jsx创建虚拟DOM1234const VDOM=( /* 此处一定不要写引号，因为不是字符串 */ &lt;h1 id=&quot;title&quot;&gt;  &lt;span&gt;Hello,React&lt;/sp..."><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=虚拟DOM创建 - 小璇妙妙屋&amp;body=https://yyyutang.github.io/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;Copied!&quot;)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
+        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://yyyutang.github.io/2024/03/29/webpack%E4%B8%8Evite/" /></div>
+        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://yyyutang.github.io/2024/03/29/webpack%E4%B8%8Evite/&title=细说webpack与vite的区别 - 小璇妙妙屋&pics=/picture/webpack.png&summary=周一面试的时候被问到两者之间的区别，当时答得并不是很好，今天从webpack和vite 的工作原理来分析vite与webpack的具体区别。
+Webpack首先，众所周知，Webpack 是一个基于打包器的构建工具，同一个入口文件的代..."><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=细说webpack与vite的区别 - 小璇妙妙屋&amp;body=https://yyyutang.github.io/2024/03/29/webpack%E4%B8%8Evite/"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;Copied!&quot;)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
         
         <div class="qrcode" id="qrcode-wechat" style="opacity:0;height:0">
-          <img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://yyyutang.github.io/2023/06/18/%E8%99%9A%E6%8B%9FDOM%E5%88%9B%E5%BB%BA/"/>
+          <img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://yyyutang.github.io/2024/03/29/webpack%E4%B8%8Evite/"/>
         </div>
         
       </div>
     </section>
     </div>
 </article>
-<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">Newer</div><a href="/2023/06/18/jsx/">jsx基础知识</a></div><div class="item" id="next"><div class="note">Older</div><a href="/2023/06/18/%E7%B1%BB%E5%BC%8F%E7%BB%84%E4%BB%B6/">类式组件</a></div></section></div>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/03/22/Vue%E5%8E%9F%E7%90%86%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%94%EF%BC%9A%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9%20vnode%20%E7%94%9F%E6%88%90%E7%9C%9F%E5%AE%9EDOM/">Vue原理系列之五：虚拟节点 vnode 生成真实DOM</a></div></section></div>
 
 
 
@@ -136,7 +187,7 @@
 
 
 
-<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%94%A8jsx%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9FDOM"><span class="toc-text">1.用jsx创建虚拟DOM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%94%A8js%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9FDOM"><span class="toc-text">2.用js创建虚拟DOM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%99%9A%E6%8B%9FDOM%E4%B8%8E%E7%9C%9F%E5%AE%9EDOM%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">3.虚拟DOM与真实DOM的区别</span></a></li></ol></div><div class="widget-footer">
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Webpack"><span class="toc-text">Webpack</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vite"><span class="toc-text">Vite</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%83%AD%E6%9B%B4%E6%96%B0"><span class="toc-text">热更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%BB%8D%E9%9C%80%E6%89%93%E5%8C%85"><span class="toc-text">生产环境仍需打包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87"><span class="toc-text">性能提升</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E9%A2%84%E6%9E%84%E5%BB%BA"><span class="toc-text">依赖预构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98"><span class="toc-text">缓存</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%93%E5%AD%98"><span class="toc-text">文件系统缓存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98"><span class="toc-text">浏览器缓存</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vite%E6%AF%94webpack%E5%BF%AB%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-text">vite比webpack快的原因</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8B%E9%9D%A2%E8%AF%A6%E7%BB%86%E6%9D%A5%E8%AF%B4%EF%BC%9A"><span class="toc-text">下面详细来说：</span></a></li></ol></li></ol></li></ol></li></ol></div><div class="widget-footer">
 
 <a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>Scroll to Top</span></a></div></widget>
 </div></aside><div class='float-panel blur'>
