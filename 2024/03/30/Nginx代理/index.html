@@ -16,16 +16,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" content="#f8f8f8">
   
-  <title>Nodejs npm - 小璇妙妙屋</title>
+  <title>为什么要用nginx代理？ - 小璇妙妙屋</title>
 
   
-  <meta name="description" content="简介
-npm 简介链接： 软件包管理器，用于下载和管理 Node.js 环境中的软件包
-npm 使用步骤：
-初始化清单文件： npm init -y （得到 package.json 文件，有则跳过此命令）
-注意 -y 就是所有选项用默认值，所在文件夹不要有中文&#x2F;特殊符号，建议英文和...">
+  <meta name="description" content="面试的时候，面试官问了我一个问题：为什么你们的项目需要用nginx部署呢？
+说实话，这个问题在此前我并没有认真思考过，只是看到网络上说部署项目大家都用nginx，就按着流程按部就班地做了。今天整理了一下nginx的特点，并且就此分析了为什么我们的项目组选用了nginx部署。
+nginx的优势
+...">
   
-  <meta name="keywords" content="前端,Node.js,npm">
+  <meta name="keywords" content="前端,项目">
 
   <!-- feed -->
   
@@ -70,47 +69,77 @@ npm 使用步骤：
 <div class="article banner top">
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
-<span class="sep"></span><a class="cap breadcrumb" href="/posts">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/Node-js/">Node.js</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-03-11T02:50:00.000Z">2024-03-11</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2024-03-30T18:31:14.585Z">2024-03-31</time></span></div></div></div>
+<span class="sep"></span><a class="cap breadcrumb" href="/posts">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E9%A1%B9%E7%9B%AE/">项目</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-03-30T14:45:00.000Z">2024-03-30</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2024-03-30T18:31:14.449Z">2024-03-31</time></span></div></div></div>
     
     <div class="bottom only-title">
       
       <div class="text-area">
-        <h1 class="text title"><span>Nodejs npm</span></h1>
+        <h1 class="text title"><span>为什么要用nginx代理？</span></h1>
         
       </div>
     </div>
     
   </div>
-  </div><article class="md-text content"><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><ol>
-<li>npm 简介<a target="_blank" rel="noopener" href="http://dev.nodejs.cn/learn/an-introduction-to-the-npm-package-manager" title="链接">链接</a>： 软件包管理器，用于下载和管理 Node.js 环境中的软件包</li>
-<li>npm 使用步骤：<ol>
-<li>初始化清单文件： npm init -y （得到 package.json 文件，有则跳过此命令）<blockquote>
-<p>注意 -y 就是所有选项用默认值，所在文件夹不要有中文&#x2F;特殊符号，建议英文和数字组成，因为 npm 包名限制建议用英文和数字或者下划线中划线</p>
-</blockquote>
-</li>
-<li>下载软件包：npm i 软件包名称</li>
-<li>使用软件包</li>
-</ol>
-</li>
-<li>需求：使用 npm 下载 dayjs 软件包到本地项目文件夹中，引入到 index.js 中格式化日期打印，运行观察效果</li>
-<li>具体使用流程图：</li>
-</ol>
-<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/11/npm/image-20230331155537983_LbotGQ-TUJ.png"></p>
-<h2 id="npm全局软件包-nodemon"><a href="#npm全局软件包-nodemon" class="headerlink" title="npm全局软件包-nodemon"></a>npm全局软件包-nodemon</h2><ol>
-<li>软件包区别：<ul>
-<li>本地软件包：当前项目内使用，作用在<strong>当前项目</strong>，封装的<strong>属性&#x2F;方法</strong>，供项目调用编写业务需求，封装属性和方法，存在于 node_modules</li>
-<li>全局软件包：本机所有项目使用，作用在<strong>所有项目</strong>，一般封装的<strong>命令&#x2F;工具</strong>，支撑项目运行，封装命令和工具，存在于系统设置的位置<br><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/2024/03/11/npm/image-20230331170539931_UNo17y5yYB.png"></li>
+  </div><article class="md-text content"><p>面试的时候，面试官问了我一个问题：为什么你们的项目需要用nginx部署呢？</p>
+<p>说实话，这个问题在此前我并没有认真思考过，只是看到网络上说部署项目大家都用nginx，就按着流程按部就班地做了。今天整理了一下nginx的特点，并且就此分析了为什么我们的项目组选用了nginx部署。</p>
+<h2 id="nginx的优势"><a href="#nginx的优势" class="headerlink" title="nginx的优势"></a>nginx的优势</h2><ul>
+<li>高性能：Nginx采用事件驱动模型和异步非阻塞IO处理，能够处理大量并发连接，具有出色的性能表现。</li>
+<li>轻量级：Nginx的设计目标是高性能和低资源消耗，具有小巧、简单的特点。</li>
+<li>可扩展性：Nginx可以通过添加模块来扩展其功能，满足不同场景的需求。</li>
+<li>高可靠性：Nginx具有优秀的稳定性和健壮性，能够处理高负载和峰值流量。</li>
+<li>配置简单：Nginx的配置文件采用简洁的语法，易于理解和维护。</li>
 </ul>
-</li>
-<li>nodemon 作用：替代 node 命令，检测代码更改，自动重启程序</li>
-<li>使用：<ol>
-<li>安装：npm i nodemon -g （-g 代表安装到全局环境中）</li>
-<li>运行：nodemon 待执行的目标 js 文件</li>
+<h2 id="nginx的作用"><a href="#nginx的作用" class="headerlink" title="nginx的作用"></a>nginx的作用</h2><p>Nginx 的最重要的几个使用场景：</p>
+<ol>
+<li>静态资源服务，通过本地文件系统提供服务；</li>
+<li>反向代理服务，延伸出包括缓存、负载均衡等；</li>
+<li><code>API</code> 服务， <code>OpenResty</code> ；</li>
 </ol>
-</li>
-<li>需求：使用 nodemon 命令来启动素材里准备好的项目，然后修改代码保存后，观察终端重启应用程序</li>
+<p>下面分别对这些场景做一个介绍。首先我们需要了解正向代理与反向代理的概念。</p>
+<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><blockquote>
+<p>正向代理，意思是一个位于客户端和原始服务器(origin server)之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标(原始服务器)，然后代理向原始服务器转交请求并将获得的内容返回给客户端。</p>
+</blockquote>
+<p>正向代理是为我们服务的，即为客户端服务的，客户端可以根据正向代理访问到它本身无法访问到的服务器资源。 </p>
+<p>正向代理对我们是透明的，对服务端是非透明的，即服务端并不知道自己收到的是来自代理的访问还是来自真实客户端的访问。 </p>
+<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><ul>
+<li>反向代理 *（Reverse Proxy）方式是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时代理服务器对外就表现为一个反向代理服务器。</li>
+</ul>
+<p>反向代理是为服务端服务的，反向代理可以帮助服务器接收来自客户端的请求，帮助服务器做请求转发，负载均衡等。</p>
+<p>反向代理对服务端是透明的，对我们是非透明的，即我们并不知道自己访问的是代理服务器，而服务器知道反向代理在为他服务。</p>
+<p>反向代理的优势：</p>
+<ul>
+<li>隐藏真实服务器；</li>
+<li>负载均衡便于横向扩充后端动态服务；</li>
+<li>动静分离，提升系统健壮性；</li>
+</ul>
+<p>那么“动静分离”是什么？负载均衡又是什么？</p>
+<h3 id="动静分离"><a href="#动静分离" class="headerlink" title="动静分离"></a>动静分离</h3><p>动静分离是指在 <code>web</code> 服务器架构中，将静态页面与动态页面或者静态内容接口和动态内容接口分开不同系统访问的架构设计方法，进而提示整个服务的访问性和可维护性。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/96c9221f098542ba8222565298c4038e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp"></p>
+<p>一般来说，都需要将动态资源和静态资源分开，由于 <code>Nginx</code> 的高并发和静态资源缓存等特性，经常将静态资源部署在 <code>Nginx</code> 上。如果请求的是静态资源，直接到静态资源目录获取资源，如果是动态资源的请求，则利用反向代理的原理，把请求转发给对应后台应用去处理，从而实现动静分离。</p>
+<p>使用前后端分离后，可以很大程度提升静态资源的访问速度，即使动态服务不可用，静态资源的访问也不会受到影响。 </p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>一般情况下，客户端发送多个请求到服务器，服务器处理请求，其中一部分可能要操作一些资源比如数据库、静态资源等，服务器处理完毕后，再将结果返回给客户端。 </p>
+<p>这种模式对于早期的系统来说，功能要求不复杂，且并发请求相对较少的情况下还能胜任，成本也低。随着信息数量不断增长，访问量和数据量飞速增长，以及系统业务复杂度持续增加，这种做法已无法满足要求，并发量特别大时，服务器容易崩。 </p>
+<p>很明显这是由于服务器性能的瓶颈造成的问题，除了堆机器之外，最重要的做法就是负载均衡。</p>
+<p>请求爆发式增长的情况下，单个机器性能再强劲也无法满足要求了，这个时候集群的概念产生了，单个服务器解决不了的问题，可以使用多个服务器，然后将请求分发到各个服务器上，将负载分发到不同的服务器，这就是负载均衡，核心是「分摊压力」。 <code>Nginx</code> 实现负载均衡，一般来说指的是将请求转发给服务器集群。</p>
+<p>举个具体的例子，晚高峰乘坐地铁的时候，入站口经常会有地铁工作人员大喇叭“请走 <code>B</code> 口， <code>B</code> 口人少车空….”，这个工作人员的作用就是负载均衡。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5f79f698d1fc497db14c971ea417f456~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp"></p>
+<p><code>Nginx</code> 实现负载均衡的策略：</p>
+<ul>
+<li>轮询策略：默认情况下采用的策略，将所有客户端请求轮询分配给服务端。这种策略是可以正常工作的，但是如果其中某一台服务器压力太大，出现延迟，会影响所有分配在这台服务器下的用户。</li>
+<li>最小连接数策略：将请求优先分配给压力较小的服务器，它可以平衡每个队列的长度，并避免向压力大的服务器添加更多的请求。</li>
+<li>最快响应时间策略：优先分配给响应时间最短的服务器。</li>
+<li>客户端 <code>ip</code> 绑定策略：来自同一个 <code>ip</code> 的请求永远只分配一台服务器，有效解决了动态网页存在的 <code>session</code> 共享问题。</li>
+</ul>
+<p>那么结合上面说的这些点，项目部署为什么要用到nginx的答案也就呼之欲出了。无非就包括以下几点：</p>
+<ol>
+<li>轻松支持 https</li>
+<li>解决前后端跨域问题</li>
+<li>前后端解耦，方便维护以及负载均衡</li>
+<li>Nginx静态资源处理性能要比后端常用的容器高数倍</li>
+<li>Nginx接收外部访问，类似于后端服务的防火墙，更安全</li>
 </ol>
+<p>另外，我们的项目由于有多个服务，利用nginx可以统一入口。这样，用户访问时只需要知道一个域名和标准端口（如80或443），Nginx根据请求的URL路径或其他条件将请求转发到对应的内部端口。这样的配置简化了外部访问路径，对用户来说更加方便。</p>
 
 <div class="article-footer fs14">
     <section id="license">
@@ -122,22 +151,19 @@ npm 使用步骤：
     <section id="share">
       <div class="header"><span>Share</span></div>
       <div class="body">
-        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://yyyutang.github.io/2024/03/11/npm/" /></div>
-        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://yyyutang.github.io/2024/03/11/npm/&title=Nodejs npm - 小璇妙妙屋&pics=/picture/nodejs.webp&summary=简介
-npm 简介链接： 软件包管理器，用于下载和管理 Node.js 环境中的软件包
-npm 使用步骤：
-初始化清单文件： npm init -y （得到 package.json 文件，有则跳过此命令）
-注意 -y 就是所有选项用..."><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=Nodejs npm - 小璇妙妙屋&amp;body=https://yyyutang.github.io/2024/03/11/npm/"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;Copied!&quot;)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
+        <div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://yyyutang.github.io/2024/03/30/Nginx%E4%BB%A3%E7%90%86/" /></div>
+        <div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/b32ef3da1162a.svg" /></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://yyyutang.github.io/2024/03/30/Nginx%E4%BB%A3%E7%90%86/&title=为什么要用nginx代理？ - 小璇妙妙屋&pics=/picture/qianduan.jpg&summary=面试的时候，面试官问了我一个问题：为什么你们的项目需要用nginx部署呢？
+说实话，这个问题在此前我并没有认真思考过，只是看到网络上说部署项目大家都用nginx，就按着流程按部就班地做了。今天整理了一下nginx的特点，并且就此分析了..."><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/80c07e4dbb303.svg" /></a><a class="social share-item email" href="mailto:?subject=为什么要用nginx代理？ - 小璇妙妙屋&amp;body=https://yyyutang.github.io/2024/03/30/Nginx%E4%BB%A3%E7%90%86/"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/a1b00e20f425d.svg" /></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;Copied!&quot;)"><img class="lazy"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/social/8411ed322ced6.svg" /></a></div>
         
         <div class="qrcode" id="qrcode-wechat" style="opacity:0;height:0">
-          <img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://yyyutang.github.io/2024/03/11/npm/"/>
+          <img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://yyyutang.github.io/2024/03/30/Nginx%E4%BB%A3%E7%90%86/"/>
         </div>
         
       </div>
     </section>
     </div>
 </article>
-<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">Newer</div><a href="/2024/03/11/NodeJS%E6%A8%A1%E5%9D%97%E5%8C%96/">Nodejs 模块化</a></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/03/11/%E5%8E%8B%E7%BC%A9HTML/">Nodejs 压缩HTML</a></div></section></div>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/03/30/%E6%B5%85%E8%B0%88%E5%89%8D%E7%AB%AF%E6%A8%A1%E5%9D%97%E5%8C%96/">浅谈前端模块化</a></div></section></div>
 
 
 
@@ -166,7 +192,7 @@ npm 使用步骤：
 
 
 
-<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#npm%E5%85%A8%E5%B1%80%E8%BD%AF%E4%BB%B6%E5%8C%85-nodemon"><span class="toc-text">npm全局软件包-nodemon</span></a></li></ol></div><div class="widget-footer">
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#nginx%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-text">nginx的优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nginx%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">nginx的作用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-text">正向代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-text">反向代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB"><span class="toc-text">动静分离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-text">负载均衡</span></a></li></ol></li></ol></div><div class="widget-footer">
 
 <a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>Scroll to Top</span></a></div></widget>
 </div></aside><div class='float-panel blur'>
